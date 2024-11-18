@@ -1,23 +1,36 @@
 import sys
 import random
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtWidgets
+from PySide6.QtCore import Qt, QRect
+from PySide6.QtGui import QPainter, QImage
 
+CELL_SIZE = 50
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QPainter(self)
         self.drawBoard(painter)
+
+        img = QImage()
+        img.load("resources/imgs/rook-b.png")
+        img = img.scaled(CELL_SIZE, CELL_SIZE, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        painter.drawImage(0, 0, img)
+
+        img2 = QImage()
+        img2.load("resources/imgs/knight-b.png")
+        img2 = img2.scaled(CELL_SIZE, CELL_SIZE, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        painter.drawImage(CELL_SIZE, 0, img2)
+        
 
     def drawBoard(self, painter):
         startX = 0
         startY = 0
-        cellSize = 40
         cellNum = 0
-        blackColor = QtCore.Qt.GlobalColor.darkRed
-        whiteColor = QtCore.Qt.GlobalColor.lightGray
-        painter.setPen(QtCore.Qt.GlobalColor.transparent)
+        blackColor = Qt.GlobalColor.darkRed
+        whiteColor = Qt.GlobalColor.lightGray
+        painter.setPen(Qt.GlobalColor.transparent)
         
         for y in range(0, 8):
             for x in range(0, 8):
@@ -25,7 +38,7 @@ class MyWidget(QtWidgets.QWidget):
                     painter.setBrush(blackColor)
                 else:
                     painter.setBrush(whiteColor)
-                rectangle = QtCore.QRect(startX + x * cellSize, startY + y * cellSize, cellSize, cellSize)
+                rectangle = QRect(startX + x * CELL_SIZE, startY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 painter.drawRect(rectangle)   
                 cellNum += 1
             cellNum += 1
