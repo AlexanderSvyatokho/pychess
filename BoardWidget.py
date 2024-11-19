@@ -1,7 +1,7 @@
 import sys
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QColor
 
 from Board import Board;
 from BoardImages import BoardImages;
@@ -12,6 +12,7 @@ class BoardWidget(QtWidgets.QWidget):
         super().__init__()
         self.board = Board()
         self.boardImages = BoardImages(CELL_SIZE)
+        self.selectedCell = None
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -19,27 +20,42 @@ class BoardWidget(QtWidgets.QWidget):
         self.drawPieces(painter)  
     
     def mouseReleaseEvent(self, event):
-        print(f"Mouse clicked at {event.position().x()}, {event.position().y()}")
+        x = int(event.position().x() // CELL_SIZE)
+        y = int(7 - event.position().y() // CELL_SIZE)
 
+        pieceClicked = self.board.getPiece(x, y)
+
+        if self.selectedCell and pieceClicked == None:
+            self.board.movePiece(self.selectedCell, (x, y))
+            self.selectedCell = None
+        else:
+            if self.selectedCell != (x, y) and pieceClicked and pieceClicked[0] == self.board.getTurn():
+                self.selectedCell = (x, y)
+            else:
+                self.selectedCell = None
+
+        self.update()
+        
     def drawBoard(self, painter):
-        startX = 0
-        startY = 0
-        blackColor = Qt.GlobalColor.darkRed
-        whiteColor = Qt.GlobalColor.lightGray
+        startX = startY = 0
+        blackColor = QColor(180, 136, 100)
+        blackColorSelected = QColor(216, 195, 84)
+        whiteColor = QColor(234, 214, 177)
+        whiteColorSelected = QColor(243, 234, 122)
         painter.setPen(Qt.GlobalColor.transparent)
         
         for y in range(0, 8):
             for x in range(0, 8):
                 if (x + y) % 2 == 0:
-                    painter.setBrush(whiteColor)
+                    painter.setBrush(whiteColor if self.selectedCell != (x, 7 - y) else whiteColorSelected)
                 else:
-                    painter.setBrush(blackColor)
+                    painter.setBrush(blackColor if self.selectedCell != (x, 7 - y) else blackColorSelected)
                 rectangle = QRect(startX + x * CELL_SIZE, startY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 painter.drawRect(rectangle)
 
     def drawPieces(self, painter):
         for y in range(0, 8):
             for x in range(0, 8):
-                pc = self.board.getPiece(x, 7 - y)
-                if pc:
-                    painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(pc))
+                piece = self.board.getPiece(x, 7 - y)
+                if piece:
+                    painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece))

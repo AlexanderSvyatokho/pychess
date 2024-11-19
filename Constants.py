@@ -1,1 +1,1 @@
-CELL_SIZE = 50
+CELL_SIZE = 70
