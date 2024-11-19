@@ -1,4 +1,3 @@
-import sys
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QPainter, QColor
@@ -23,13 +22,13 @@ class BoardWidget(QtWidgets.QWidget):
         x = int(event.position().x() // CELL_SIZE)
         y = int(7 - event.position().y() // CELL_SIZE)
 
-        pieceClicked = self.board.getPiece(x, y)
+        cellClicked = self.board.getPiece(x, y)
 
-        if self.selectedCell and pieceClicked == None:
+        if self.selectedCell:
             self.board.movePiece(self.selectedCell, (x, y))
             self.selectedCell = None
         else:
-            if self.selectedCell != (x, y) and pieceClicked and pieceClicked[0] == self.board.getTurn():
+            if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)
             else:
                 self.selectedCell = None

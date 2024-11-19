@@ -1,14 +1,13 @@
 import sys
-import random
+import logging
+
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QGridLayout
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter
 
-from Board import Board
 from BoardWidget import BoardWidget
-from BoardImages import BoardImages
 from Constants import CELL_SIZE
+
+logging.basicConfig(level=logging.DEBUG)
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
