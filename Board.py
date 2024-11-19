@@ -24,52 +24,50 @@ class Board:
         return self.turn
     
     def getValidMovesForPiece(self, x, y):
-        piece = self.getPiece(x, y)
+        piece = self.board[x][y]
         if (not piece):
             logging.warning('Board: getValidMovesForPiece: no piece at x and y')
             return []
-        
-        if (piece[0] != self.turn): 
-            logging.warning('Board: getValidMovesForPiece: attempted to move opponent\'s piece')
-            return []
     
         if (piece[1] == 'P'):
-            return self.getValidMovesForPawn(x, y)
+            return self.getMovesForPawn(x, y)
         elif (piece[1] == 'R'):
-            return self.getValidMovesForRook(x, y)
+            return self.getMovesForRook(x, y)
         elif (piece[1] == 'N'):
-            return self.getValidMovesForKnight(x, y)
+            return self.getMovesForKnight(x, y)
         elif (piece[1] == 'B'):
-            return self.getValidMovesForBishop(x, y)
+            return self.getMovesForBishop(x, y)
         elif (piece[1] == 'Q'):
-            return self.getValidMovesForQueen(x, y)
+            return self.getMovesForQueen(x, y)
         elif (piece[1] == 'K'):
-            return self.getValidMovesForKing(x, y)
+            return self.getMovesForKing(x, y)
         else:
             logging.error('Board: getValidMovesForPiece: unknown piece type')
             return []
     
-    # Precondition: pawn at x, y
-    def getValidMovesForPawn(self, x, y):
+    # Precondition (not verified): pawn at x, y
+    def getMovesForPawn(self, x, y):
+        pieceColor = self.board[x][y][0]
         moves = []
-        direction = 1 if self.turn == 'W' else -1
+        direction = 1 if pieceColor == 'W' else -1
 
         if (y + direction <= 7) and (y + direction >= 0):
             if self.board[x][y + direction] == None:
                 moves.append((x, y + direction))
-                if self.turn == 'W' and y == 1 and self.board[x][y + 2 * direction] == None:
+                if pieceColor == 'W' and y == 1 and self.board[x][y + 2 * direction] == None:
                     moves.append((x, y + 2 * direction))
-                if self.turn == 'B' and y == 6 and self.board[x][y + 2 * direction] == None:
+                if pieceColor == 'B' and y == 6 and self.board[x][y + 2 * direction] == None:
                     moves.append((x, y + 2 * direction))
             # Captures
-            if x > 0 and self.board[x - 1][y + direction] and self.board[x - 1][y + direction][0] != self.turn:
+            if x > 0 and self.board[x - 1][y + direction] and self.board[x - 1][y + direction][0] != pieceColor:
                 moves.append((x - 1, y + direction))
-            if x < 7 and self.board[x + 1][y + direction] and self.board[x + 1][y + direction][0] != self.turn:
+            if x < 7 and self.board[x + 1][y + direction] and self.board[x + 1][y + direction][0] != pieceColor:
                 moves.append((x + 1, y + direction))
         return moves
     
-    # Precondition: rook at x, y
-    def getValidMovesForRook(self, x, y):
+    # Precondition (not verified): rook at x, y
+    def getMovesForRook(self, x, y):
+        pieceColor = self.board[x][y][0]
         moves = []
 
         # Horizontal moves to the right
@@ -77,7 +75,7 @@ class Board:
             if x + i < 8:
                 if not self.board[x + i][y]:
                     moves.append((x + i, y))
-                elif self.board[x + i][y][0] != self.turn:
+                elif self.board[x + i][y][0] != pieceColor:
                     moves.append((x + i, y)) # Capture
                     break
                 else:
@@ -88,7 +86,7 @@ class Board:
             if x - i >= 0:
                 if not self.board[x - i][y]:
                     moves.append((x - i, y))
-                elif self.board[x - i][y][0] != self.turn:
+                elif self.board[x - i][y][0] != pieceColor:
                     moves.append((x - i, y)) # Capture
                     break
                 else:
@@ -99,7 +97,7 @@ class Board:
             if y + i < 8:
                 if not self.board[x][y + i]:
                     moves.append((x, y + i))
-                elif self.board[x][y + i][0] != self.turn:
+                elif self.board[x][y + i][0] != pieceColor:
                     moves.append((x, y + i)) # Capture
                     break
                 else:
@@ -110,7 +108,7 @@ class Board:
             if y - i >= 0:
                 if not self.board[x][y - i]:
                     moves.append((x, y - i))
-                elif self.board[x][y - i][0] != self.turn:
+                elif self.board[x][y - i][0] != pieceColor:
                     moves.append((x, y - i)) # Capture
                     break
                 else:
@@ -118,8 +116,9 @@ class Board:
 
         return moves
     
-    # Precondition: knigh at x, y
-    def getValidMovesForKnight(self, x, y):
+    # Precondition (not verified): knigh at x, y
+    def getMovesForKnight(self, x, y):
+        pieceColor = self.board[x][y][0]
         moves = []
 
         # Up moves
@@ -127,25 +126,25 @@ class Board:
             if x + 1 < 8:
                 if not self.board[x + 1][y + 2]:
                     moves.append((x + 1, y + 2))
-                elif self.board[x + 1][y + 2][0] != self.turn:
+                elif self.board[x + 1][y + 2][0] != pieceColor:
                     moves.append((x + 1, y + 2)) # Capture
         if y + 1 < 8:
             if x + 2 < 8:
                 if not self.board[x + 2][y + 1]:
                     moves.append((x + 2, y + 1))
-                elif self.board[x + 2][y + 1][0] != self.turn:
+                elif self.board[x + 2][y + 1][0] != pieceColor:
                     moves.append((x + 2, y + 1)) # Capture
         if y - 1 >= 0:
             if x + 2 < 8:
                 if not self.board[x + 2][y - 1]:
                     moves.append((x + 2, y - 1))
-                elif self.board[x + 2][y - 1][0] != self.turn:
+                elif self.board[x + 2][y - 1][0] != pieceColor:
                     moves.append((x + 2, y - 1)) # Capture
         if y - 2 >= 0:
             if x + 1 < 8:
                 if not self.board[x + 1][y - 2]:
                     moves.append((x + 1, y - 2))
-                elif self.board[x + 1][y - 2][0] != self.turn:
+                elif self.board[x + 1][y - 2][0] != pieceColor:
                     moves.append((x + 1, y - 2)) # Capture
 
         # Down moves
@@ -153,31 +152,32 @@ class Board:
             if x - 1 >= 0:
                 if not self.board[x - 1][y - 2]:
                     moves.append((x - 1, y - 2))
-                elif self.board[x - 1][y - 2][0] != self.turn:
+                elif self.board[x - 1][y - 2][0] != pieceColor:
                     moves.append((x - 1, y - 2)) # Capture
         if y - 1 >= 0:
             if x - 2 >= 0:
                 if not self.board[x - 2][y - 1]:
                     moves.append((x - 2, y - 1))
-                elif self.board[x - 2][y - 1][0] != self.turn:
+                elif self.board[x - 2][y - 1][0] != pieceColor:
                     moves.append((x - 2, y - 1)) # Capture
         if y + 1 < 8:
             if x - 2 >= 0:
                 if not self.board[x - 2][y + 1]:
                     moves.append((x - 2, y + 1))
-                elif self.board[x - 2][y + 1][0] != self.turn:
+                elif self.board[x - 2][y + 1][0] != pieceColor:
                     moves.append((x - 2, y + 1))
         if y + 2 < 8:
             if x - 1 >= 0:
                 if not self.board[x - 1][y + 2]:
                     moves.append((x - 1, y + 2))
-                elif self.board[x - 1][y + 2][0] != self.turn:
+                elif self.board[x - 1][y + 2][0] != pieceColor:
                     moves.append((x - 1, y + 2))
 
         return moves
     
-    # Precondition: bishop at x, y
-    def getValidMovesForBishop(self, x, y):
+    # Precondition (not verified): bishop at x, y
+    def getMovesForBishop(self, x, y):
+        pieceColor = self.board[x][y][0]
         moves = []
 
         # Diagonal moves to the right up
@@ -185,7 +185,7 @@ class Board:
             if x + i < 8 and y + i < 8:
                 if not self.board[x + i][y + i]:
                     moves.append((x + i, y + i))
-                elif self.board[x + i][y + i][0] != self.turn:
+                elif self.board[x + i][y + i][0] != pieceColor:
                     moves.append((x + i, y + i)) # Capture
                     break
                 else:
@@ -196,7 +196,7 @@ class Board:
             if x - i >= 0 and y + i < 8:
                 if not self.board[x - i][y + i]:
                     moves.append((x - i, y + i))
-                elif self.board[x - i][y + i][0] != self.turn:
+                elif self.board[x - i][y + i][0] != pieceColor:
                     moves.append((x - i, y + i)) # Capture
                     break
                 else:
@@ -207,7 +207,7 @@ class Board:
             if x + i < 8 and y - i >= 0:
                 if not self.board[x + i][y - i]:
                     moves.append((x + i, y - i))
-                elif self.board[x + i][y - i][0] != self.turn:
+                elif self.board[x + i][y - i][0] != pieceColor:
                     moves.append((x + i, y - i)) # Capture
                     break
                 else:
@@ -218,7 +218,7 @@ class Board:
             if x - i >= 0 and y - i >= 0:
                 if not self.board[x - i][y - i]:
                     moves.append((x - i, y - i))
-                elif self.board[x - i][y - i][0] != self.turn:
+                elif self.board[x - i][y - i][0] != pieceColor:
                     moves.append((x - i, y - i)) # Capture
                     break
                 else:
@@ -226,66 +226,71 @@ class Board:
 
         return moves
         
-    # Precondition: queen at x, y
-    def getValidMovesForQueen(self, x, y):
-        return self.getValidMovesForRook(x, y) + self.getValidMovesForBishop(x, y)
+    # Precondition (not verified): queen at x, y
+    def getMovesForQueen(self, x, y):
+        return self.getMovesForRook(x, y) + self.getMovesForBishop(x, y)
     
-    # Precondition: king at x, y
-    def getValidMovesForKing(self, x, y):
+    # Precondition (not verified): king at x, y
+    def getMovesForKing(self, x, y):
+        pieceColor = self.board[x][y][0]
         moves = []
 
         # Up moves
         if y + 1 < 8:
             if not self.board[x][y + 1]:
                 moves.append((x, y + 1))
-            elif self.board[x][y + 1][0] != self.turn:
+            elif self.board[x][y + 1][0] != pieceColor:
                 moves.append((x, y + 1)) # Capture
         if y + 1 < 8 and x + 1 < 8:
             if not self.board[x + 1][y + 1]:
                 moves.append((x + 1, y + 1))
-            elif self.board[x + 1][y + 1][0] != self.turn:
+            elif self.board[x + 1][y + 1][0] != pieceColor:
                 moves.append((x + 1, y + 1)) # Capture
         if y + 1 < 8 and x - 1 >= 0:
             if not self.board[x - 1][y + 1]:
                 moves.append((x - 1, y + 1))
-            elif self.board[x - 1][y + 1][0] != self.turn:
+            elif self.board[x - 1][y + 1][0] != pieceColor:
                 moves.append((x - 1, y + 1)) # Capture
 
         # Down moves
         if y - 1 >= 0:
             if not self.board[x][y - 1]:
                 moves.append((x, y - 1))
-            elif self.board[x][y - 1][0] != self.turn:
+            elif self.board[x][y - 1][0] != pieceColor:
                 moves.append((x, y - 1)) # Capture
         if y - 1 >= 0 and x + 1 < 8:
             if not self.board[x + 1][y - 1]:
                 moves.append((x + 1, y - 1))
-            elif self.board[x + 1][y - 1][0] != self.turn:
+            elif self.board[x + 1][y - 1][0] != pieceColor:
                 moves.append((x + 1, y - 1)) # Capture
         if y - 1 >= 0 and x - 1 >= 0:
             if not self.board[x - 1][y - 1]:
                 moves.append((x - 1, y - 1))
-            elif self.board[x - 1][y - 1][0] != self.turn:
+            elif self.board[x - 1][y - 1][0] != pieceColor:
                 moves.append((x - 1, y - 1)) # Capture
 
         # Horizontal moves
         if x + 1 < 8:
             if not self.board[x + 1][y]:
                 moves.append((x + 1, y))
-            elif self.board[x + 1][y][0] != self.turn:
+            elif self.board[x + 1][y][0] != pieceColor:
                 moves.append((x + 1, y)) # Capture
         if x - 1 >= 0:
             if not self.board[x - 1][y]:
                 moves.append((x - 1, y))
-            elif self.board[x - 1][y][0] != self.turn:
+            elif self.board[x - 1][y][0] != pieceColor:
                 moves.append((x - 1, y)) # Capture
 
         return moves
     
     def movePiece(self, fromCell, toCell):
         piece = self.getPiece(fromCell[0], fromCell[1])
+        if (not piece):
+            logging.warning(f'Board: movePiece: No piece at {fromCell[0], fromCell[1]}')
+            return
+        
         if (not piece or piece[0] != self.turn):
-            logging.warning(f'Board: movePiece: Attempted to move an invalid piece at {fromCell[0], fromCell[1]}')
+            logging.warning(f'Board: movePiece: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.turn}. Piece: {piece}')
             return
         
         validMoves = self.getValidMovesForPiece(fromCell[0], fromCell[1])

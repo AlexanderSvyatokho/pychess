@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets
-from PySide6.QtCore import Qt, QRect
+from PySide6.QtCore import Qt, QRect, QPoint
 from PySide6.QtGui import QPainter, QColor
 
 from Board import Board;
@@ -12,11 +12,13 @@ class BoardWidget(QtWidgets.QWidget):
         self.board = Board()
         self.boardImages = BoardImages(CELL_SIZE)
         self.selectedCell = None
+        self.possibleMoves = []
 
     def paintEvent(self, event):
         painter = QPainter(self)
         self.drawBoard(painter)
         self.drawPieces(painter)  
+        self.drawPossibleMoves(painter)    
     
     def mouseReleaseEvent(self, event):
         x = int(event.position().x() // CELL_SIZE)
@@ -27,15 +29,18 @@ class BoardWidget(QtWidgets.QWidget):
         if self.selectedCell:
             self.board.movePiece(self.selectedCell, (x, y))
             self.selectedCell = None
+            self.possibleMoves = []
         else:
             if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)
+                self.possibleMoves = self.board.getValidMovesForPiece(x, y)
             else:
                 self.selectedCell = None
+                self.possibleMoves = []
 
         self.update()
         
-    def drawBoard(self, painter):
+    def drawBoard(self, painter: QPainter):
         startX = startY = 0
         blackColor = QColor(180, 136, 100)
         blackColorSelected = QColor(216, 195, 84)
@@ -52,9 +57,14 @@ class BoardWidget(QtWidgets.QWidget):
                 rectangle = QRect(startX + x * CELL_SIZE, startY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 painter.drawRect(rectangle)
 
-    def drawPieces(self, painter):
+    def drawPieces(self, painter: QPainter):
         for y in range(0, 8):
             for x in range(0, 8):
                 piece = self.board.getPiece(x, 7 - y)
                 if piece:
                     painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece))
+
+    def drawPossibleMoves(self, painter: QPainter):
+        for move in self.possibleMoves:
+            painter.setBrush(QColor(0, 0, 0, 100))
+            painter.drawEllipse(QPoint(move[0] * CELL_SIZE + 0.5 * CELL_SIZE, (7 - move[1]) * CELL_SIZE + 0.5 * CELL_SIZE), CELL_SIZE / 4, CELL_SIZE / 4)
