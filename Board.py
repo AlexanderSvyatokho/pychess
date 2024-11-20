@@ -23,10 +23,12 @@ class Board:
     def getTurn(self):
         return self.turn
     
-    def getValidMovesForPiece(self, x, y):
+    # ignoreChecks: if True, returns all possible moves for the piece, including king 
+    # moves that put the king in check
+    def getMovesForPiece(self, x, y, ignoreChecks = False) -> list[tuple[int, int]]:
         piece = self.board[x][y]
         if (not piece):
-            logging.warning('Board: getValidMovesForPiece: no piece at x and y')
+            logging.warning('Board: getMovesForPiece: no piece at x and y')
             return []
     
         if (piece[1] == 'P'):
@@ -40,13 +42,13 @@ class Board:
         elif (piece[1] == 'Q'):
             return self.getMovesForQueen(x, y)
         elif (piece[1] == 'K'):
-            return self.getMovesForKing(x, y)
+            return self.getMovesForKing(x, y, ignoreChecks)
         else:
             logging.error('Board: getValidMovesForPiece: unknown piece type')
             return []
     
     # Precondition (not verified): pawn at x, y
-    def getMovesForPawn(self, x, y):
+    def getMovesForPawn(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
         direction = 1 if pieceColor == 'W' else -1
@@ -66,7 +68,7 @@ class Board:
         return moves
     
     # Precondition (not verified): rook at x, y
-    def getMovesForRook(self, x, y):
+    def getMovesForRook(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
 
@@ -117,7 +119,7 @@ class Board:
         return moves
     
     # Precondition (not verified): knigh at x, y
-    def getMovesForKnight(self, x, y):
+    def getMovesForKnight(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
 
@@ -176,7 +178,7 @@ class Board:
         return moves
     
     # Precondition (not verified): bishop at x, y
-    def getMovesForBishop(self, x, y):
+    def getMovesForBishop(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
 
@@ -227,11 +229,11 @@ class Board:
         return moves
         
     # Precondition (not verified): queen at x, y
-    def getMovesForQueen(self, x, y):
+    def getMovesForQueen(self, x, y) -> list[tuple[int, int]]:
         return self.getMovesForRook(x, y) + self.getMovesForBishop(x, y)
     
     # Precondition (not verified): king at x, y
-    def getMovesForKing(self, x, y):
+    def getMovesForKing(self, x, y, ignoreChecks) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
 
@@ -281,21 +283,27 @@ class Board:
             elif self.board[x - 1][y][0] != pieceColor:
                 moves.append((x - 1, y)) # Capture
 
+        # Exclude moves that put the king in check
+        if (not ignoreChecks):
+            moves = [(move[0], move[1]) for move in moves if not self.isCellUnderAttack(move[0], move[1])]
+
         return moves
     
-    def movePiece(self, fromCell, toCell):
-        piece = self.getPiece(fromCell[0], fromCell[1])
+    # Attempts to make a move for the piece at fromCell to toCell. If the move is invalid, does nothing.
+    # Changes the turn if the move is valid.
+    def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
+        piece = self.getPiece(fromCell[0], fromCell[1]) 
         if (not piece):
-            logging.warning(f'Board: movePiece: No piece at {fromCell[0], fromCell[1]}')
+            logging.warning(f'Board: makeMove: No piece at {fromCell[0], fromCell[1]}')
             return
         
         if (not piece or piece[0] != self.turn):
-            logging.warning(f'Board: movePiece: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.turn}. Piece: {piece}')
+            logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.turn}. Piece: {piece}')
             return
         
-        validMoves = self.getValidMovesForPiece(fromCell[0], fromCell[1])
+        validMoves = self.getMovesForPiece(fromCell[0], fromCell[1])
         if toCell not in validMoves:
-            logging.warning(f'Board: movePiece: Invalid move for a piece at {fromCell[0], fromCell[1]}')
+            logging.warning(f'Board: makeMove: Invalid move for a piece at {fromCell[0], fromCell[1]}')
             return
         
         self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
@@ -304,6 +312,24 @@ class Board:
 
     def nextTurn(self):
         self.turn = 'W' if self.turn == 'B' else 'B'
+
+    def isCellUnderAttack(self, x, y):
+        for i in range(0, 8):
+            for j in range(0, 8):
+                piece = self.board[i][j]
+                if piece and piece[0] != self.turn:
+                    # ignoreChecks = True to avoid infinite recursion
+                    moves = self.getMovesForPiece(i, j, True)
+                    if (x, y) in moves:
+                        return True
+        return False
+
+    def isCurrentPlayerInCheck(self):
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[0] == self.turn and piece[1] == 'K':
+                    return self.isCellUnderAttack(x, y)
 
     def __str__(self):
         str = ''

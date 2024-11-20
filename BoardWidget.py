@@ -27,13 +27,13 @@ class BoardWidget(QtWidgets.QWidget):
         cellClicked = self.board.getPiece(x, y)
 
         if self.selectedCell:
-            self.board.movePiece(self.selectedCell, (x, y))
+            self.board.makeMove(self.selectedCell, (x, y))
             self.selectedCell = None
             self.possibleMoves = []
         else:
             if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)
-                self.possibleMoves = self.board.getValidMovesForPiece(x, y)
+                self.possibleMoves = self.board.getMovesForPiece(x, y)
             else:
                 self.selectedCell = None
                 self.possibleMoves = []
@@ -46,6 +46,7 @@ class BoardWidget(QtWidgets.QWidget):
         blackColorSelected = QColor(216, 195, 84)
         whiteColor = QColor(234, 214, 177)
         whiteColorSelected = QColor(243, 234, 122)
+        inCheckColor = QColor(255, 0, 0, 100)
         painter.setPen(Qt.GlobalColor.transparent)
         
         for y in range(0, 8):
@@ -56,6 +57,9 @@ class BoardWidget(QtWidgets.QWidget):
                     painter.setBrush(blackColor if self.selectedCell != (x, 7 - y) else blackColorSelected)
                 rectangle = QRect(startX + x * CELL_SIZE, startY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 painter.drawRect(rectangle)
+                if self.board.getPiece(x, 7 - y) == (self.board.getTurn() + 'K') and self.board.isCurrentPlayerInCheck():
+                    painter.setBrush(inCheckColor)
+                    painter.drawRect(rectangle)
 
     def drawPieces(self, painter: QPainter):
         for y in range(0, 8):
@@ -67,4 +71,5 @@ class BoardWidget(QtWidgets.QWidget):
     def drawPossibleMoves(self, painter: QPainter):
         for move in self.possibleMoves:
             painter.setBrush(QColor(0, 0, 0, 100))
+            painter.setPen(Qt.GlobalColor.transparent)
             painter.drawEllipse(QPoint(move[0] * CELL_SIZE + 0.5 * CELL_SIZE, (7 - move[1]) * CELL_SIZE + 0.5 * CELL_SIZE), CELL_SIZE / 4, CELL_SIZE / 4)
