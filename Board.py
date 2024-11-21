@@ -7,6 +7,12 @@ class Board:
         self.board = [[None for _ in range(8)] for _ in range(8)]
         self.setToDefault()
 
+    def copy(self):
+        newBoard = Board()
+        newBoard.board = [col.copy() for col in self.board]
+        newBoard.turn = self.turn
+        return newBoard
+
     def setToDefault(self):
         self.turn = 'W'
         # Set up the board with pieces
@@ -23,16 +29,56 @@ class Board:
     def getTurn(self):
         return self.turn
     
-    # ignoreChecks: if True, returns all possible moves for the piece, including king 
-    # moves that put the king in check
-    def getMovesForPiece(self, x, y, ignoreChecks = False) -> list[tuple[int, int]]:
+    ############################################################
+    # Moves handling methods
+    ############################################################
+    
+    # Get a list of cells a piece at x, y can move to
+    def getMovesForPiece(self, x, y) -> list[tuple[int, int]]:
         piece = self.board[x][y]
         if (not piece):
             logging.warning('Board: getMovesForPiece: no piece at x and y')
             return []
+        
+        pieceColor = self.board[x][y][0]
+        moves = []
+
+        if (piece[1] == 'P'):
+            moves = self.getMovesForPawn(x, y)
+        elif (piece[1] == 'R'):
+            moves = self.getMovesForRook(x, y)
+        elif (piece[1] == 'N'):
+            moves = self.getMovesForKnight(x, y)
+        elif (piece[1] == 'B'):
+            moves = self.getMovesForBishop(x, y)
+        elif (piece[1] == 'Q'):
+            moves = self.getMovesForQueen(x, y)
+        elif (piece[1] == 'K'):
+            moves = self.getMovesForKing(x, y)
+        else:
+            logging.error('Board: getValidMovesForPiece: unknown piece type')
+            return []
+        
+        def checkFilter(move):
+            # Check if the move puts the king in check by making the forced move
+            # on the copy of a board and checking if the player is in check
+            boardCopy = self.copy()
+            boardCopy.forceMove((x, y), move)
+            return not boardCopy.isPlayerInCheck(pieceColor)
+        
+        # Exclude moves that put the king in check
+        moves = filter(checkFilter, moves)
+        return moves
+        
+    # Get a list of cells attacked by a piece at x, y
+    def getCellsAttackedByPiece(self, x, y) -> list[tuple[int, int]]:
+        piece = self.board[x][y]
+        if (not piece):
+            logging.warning('Board: getCellsAttackedByPiece: no piece at x and y')
+            return []
     
         if (piece[1] == 'P'):
-            return self.getMovesForPawn(x, y)
+            return self.getCellsAttackedByPawn(x, y)
         elif (piece[1] == 'R'):
             return self.getMovesForRook(x, y)
         elif (piece[1] == 'N'):
@@ -42,9 +88,9 @@ class Board:
         elif (piece[1] == 'Q'):
             return self.getMovesForQueen(x, y)
         elif (piece[1] == 'K'):
-            return self.getMovesForKing(x, y, ignoreChecks)
+            return self.getMovesForKing(x, y)
         else:
-            logging.error('Board: getValidMovesForPiece: unknown piece type')
+            logging.error('Board: getCellsAttackedByPiece: unknown piece type')
             return []
     
     # Precondition (not verified): pawn at x, y
@@ -64,6 +110,19 @@ class Board:
             if x > 0 and self.board[x - 1][y + direction] and self.board[x - 1][y + direction][0] != pieceColor:
                 moves.append((x - 1, y + direction))
             if x < 7 and self.board[x + 1][y + direction] and self.board[x + 1][y + direction][0] != pieceColor:
+                moves.append((x + 1, y + direction))
+        return moves
+    
+    # Precondition (not verified): pawn at x, y
+    def getCellsAttackedByPawn(self, x, y) -> list[tuple[int, int]]:
+        pieceColor = self.board[x][y][0]
+        moves = []
+        direction = 1 if pieceColor == 'W' else -1
+
+        if (y + direction <= 7) and (y + direction >= 0):
+            if x > 0:
+                moves.append((x - 1, y + direction))
+            if x < 7:
                 moves.append((x + 1, y + direction))
         return moves
     
@@ -233,7 +292,7 @@ class Board:
         return self.getMovesForRook(x, y) + self.getMovesForBishop(x, y)
     
     # Precondition (not verified): king at x, y
-    def getMovesForKing(self, x, y, ignoreChecks) -> list[tuple[int, int]]:
+    def getMovesForKing(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
 
@@ -283,10 +342,6 @@ class Board:
             elif self.board[x - 1][y][0] != pieceColor:
                 moves.append((x - 1, y)) # Capture
 
-        # Exclude moves that put the king in check
-        if (not ignoreChecks):
-            moves = [(move[0], move[1]) for move in moves if not self.isCellUnderAttack(move[0], move[1], self.oppositeColor(pieceColor))]
-
         return moves
     
     def isCellUnderAttack(self, x, y, attackerColor):
@@ -294,8 +349,7 @@ class Board:
             for j in range(0, 8):
                 piece = self.board[i][j]
                 if piece and piece[0] == attackerColor:
-                    # ignoreChecks = True to avoid infinite recursion
-                    moves = self.getMovesForPiece(i, j, True)
+                    moves = self.getCellsAttackedByPiece(i, j)
                     if (x, y) in moves:
                         return True
         return False
@@ -306,6 +360,12 @@ class Board:
                 piece = self.board[x][y]
                 if piece and piece[0] == playerColor and piece[1] == 'K':
                     return self.isCellUnderAttack(x, y, self.oppositeColor(playerColor))
+                
+    # Moves a piece from fromCell to toCell without checking if the move is valid
+    # Precondition (not verified): piece at x, y
+    def forceMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
+        self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
+        self.board[fromCell[0]][fromCell[1]] = None
                 
     ############################################################
     # Turn specific methods
