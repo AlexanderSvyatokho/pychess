@@ -5,7 +5,7 @@ from PySide6.QtGui import QImage
 # Loads board images and provides access to them
 class BoardImages:
     def __init__(self, cellSize):
-        pieces = ['WR', 'WN', 'WB', 'WQ', 'WK', 'WP', 'BR', 'BN', 'BB', 'BQ', 'BK', 'BP']
+        pieces = ['WR', 'WN', 'WB', 'WQ', 'WK', 'WK#', 'WP', 'BR', 'BN', 'BB', 'BQ', 'BK', 'BK#', 'BP']
         self.images = {piece: self.loadImage(piece, cellSize) for piece in pieces}
         
     def loadImage(self, imageName, cellSize):

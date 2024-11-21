@@ -66,7 +66,10 @@ class BoardWidget(QtWidgets.QWidget):
             for x in range(0, 8):
                 piece = self.board.getPiece(x, 7 - y)
                 if piece:
-                    painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece))
+                    if piece == (self.board.getTurn() + 'K') and self.board.isCurrentPlayerInCheckmate():
+                        painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece+'#'))
+                    else:
+                        painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece))
 
     def drawPossibleMoves(self, painter: QPainter):
         for move in self.possibleMoves:

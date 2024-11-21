@@ -67,7 +67,7 @@ class Board:
             return not boardCopy.isPlayerInCheck(pieceColor)
         
         # Exclude moves that put the king in check
-        moves = filter(checkFilter, moves)
+        moves = list(filter(checkFilter, moves))
         return moves
         
     # Get a list of cells attacked by a piece at x, y
@@ -344,6 +344,15 @@ class Board:
 
         return moves
     
+    def getValidMoves(self, playerColor):
+        moves = []
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[0] == playerColor:
+                    moves += self.getMovesForPiece(x, y)
+        return moves
+    
     def isCellUnderAttack(self, x, y, attackerColor):
         for i in range(0, 8):
             for j in range(0, 8):
@@ -360,6 +369,15 @@ class Board:
                 piece = self.board[x][y]
                 if piece and piece[0] == playerColor and piece[1] == 'K':
                     return self.isCellUnderAttack(x, y, self.oppositeColor(playerColor))
+                
+    def hasValidMoves(self, playerColor):
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[0] == playerColor:
+                    if self.getMovesForPiece(x, y):
+                        return True
+        return False
                 
     # Moves a piece from fromCell to toCell without checking if the move is valid
     # Precondition (not verified): piece at x, y
@@ -397,6 +415,9 @@ class Board:
 
     def isCurrentPlayerInCheck(self):
         return self.isPlayerInCheck(self.turn)
+    
+    def isCurrentPlayerInCheckmate(self):
+        return self.isPlayerInCheck(self.turn) and not self.hasValidMoves(self.turn)
 
     ############################################################
     # Utility methods
