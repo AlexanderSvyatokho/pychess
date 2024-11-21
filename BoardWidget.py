@@ -30,6 +30,7 @@ class BoardWidget(QtWidgets.QWidget):
             self.board.makeMove(self.selectedCell, (x, y))
             self.selectedCell = None
             self.possibleMoves = []
+            self.board.printState()
         else:
             if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)

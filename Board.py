@@ -11,10 +11,13 @@ class Board:
         newBoard = Board()
         newBoard.board = [col.copy() for col in self.board]
         newBoard.turn = self.turn
+        newBoard.canCastle = self.canCastle.copy()
         return newBoard
 
     def setToDefault(self):
         self.turn = 'W'
+        self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
+
         # Set up the board with pieces
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         for i in range(8):
@@ -88,7 +91,7 @@ class Board:
         elif (piece[1] == 'Q'):
             return self.getMovesForQueen(x, y)
         elif (piece[1] == 'K'):
-            return self.getMovesForKing(x, y)
+            return self.getCellsAttackedByKing(x, y)
         else:
             logging.error('Board: getCellsAttackedByPiece: unknown piece type')
             return []
@@ -176,7 +179,7 @@ class Board:
                     break   
 
         return moves
-    
+       
     # Precondition (not verified): knigh at x, y
     def getMovesForKnight(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
@@ -294,6 +297,25 @@ class Board:
     # Precondition (not verified): king at x, y
     def getMovesForKing(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
+        moves = self.getCellsAttackedByKing(x, y)
+
+        # Castling
+        if pieceColor == 'W':
+            if self.canCastle['W']['K'] and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
+                moves.append((6, 0))
+            if self.canCastle['W']['Q'] and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
+                moves.append((2, 0))
+        else:
+            if self.canCastle['B']['K'] and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
+                moves.append((6, 7))
+            if self.canCastle['B']['Q'] and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
+                moves.append((2, 7))
+
+        return moves
+    
+    # Precondition (not verified): pawn at x, y
+    def getCellsAttackedByKing(self, x, y) -> list[tuple[int, int]]:
+        pieceColor = self.board[x][y][0]
         moves = []
 
         # Up moves
@@ -344,6 +366,19 @@ class Board:
 
         return moves
     
+    # precondition (not verified): king at x, y; castling is possible
+    def castle(self, kingX, kingY, side):
+        pieceColor = self.board[kingX][kingY][0]
+        if side == 'K':
+            self.forceMove((kingX, kingY), (kingX + 2, kingY))
+            self.forceMove((kingX + 3, kingY), (kingX + 1, kingY))
+        elif side == 'Q':
+            self.forceMove((kingX, kingY), (kingX - 2, kingY))
+            self.forceMove((kingX - 4, kingY), (kingX - 1, kingY))
+        
+        self.canCastle[pieceColor]['K'] = False
+        self.canCastle[pieceColor]['Q'] = False
+
     def getValidMoves(self, playerColor):
         moves = []
         for y in range(0, 8):
@@ -393,6 +428,8 @@ class Board:
     # Changes the turn if the move is valid.
     def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
         piece = self.getPiece(fromCell[0], fromCell[1]) 
+        pieceColor = piece[0]
+
         if (not piece):
             logging.warning(f'Board: makeMove: No piece at {fromCell[0], fromCell[1]}')
             return
@@ -406,8 +443,33 @@ class Board:
             logging.warning(f'Board: makeMove: Invalid move for a piece at {fromCell[0], fromCell[1]}')
             return
         
-        self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
-        self.board[fromCell[0]][fromCell[1]] = None
+        if piece[1] == 'K' and abs(fromCell[0] - toCell[0]) >= 2:
+            # Castling
+            self.castle(fromCell[0], fromCell[1], 'K' if toCell[0] > fromCell[0] else 'Q')
+        else:
+            # Update castling rights
+
+            # King moves
+            if piece[1] == 'K':
+                self.canCastle[self.turn]['K'] = False
+                self.canCastle[self.turn]['Q'] = False
+
+            # Rook moves
+            if piece[1] == 'R':
+                if pieceColor == 'W':
+                    if fromCell == (0, 0):
+                        self.canCastle[self.turn]['Q'] = False
+                    elif fromCell == (7, 0):
+                        self.canCastle[self.turn]['K'] = False
+                else:
+                    if fromCell == (0, 7):
+                        self.canCastle[self.turn]['Q'] = False
+                    elif fromCell == (7, 7):
+                        self.canCastle[self.turn]['K'] = False
+
+            self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
+            self.board[fromCell[0]][fromCell[1]] = None
+        
         self.nextTurn()
 
     def nextTurn(self):
@@ -424,6 +486,11 @@ class Board:
     ############################################################
     def oppositeColor(self, color):
         return 'W' if color == 'B' else 'B'
+
+    def printState(self):
+        print('Board state:')
+        print(f'Turn: {self.turn}')
+        print(f'Can Castle: {self.canCastle}')
 
     def __str__(self):
         str = ''
