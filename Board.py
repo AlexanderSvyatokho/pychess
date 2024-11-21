@@ -285,10 +285,32 @@ class Board:
 
         # Exclude moves that put the king in check
         if (not ignoreChecks):
-            moves = [(move[0], move[1]) for move in moves if not self.isCellUnderAttack(move[0], move[1])]
+            moves = [(move[0], move[1]) for move in moves if not self.isCellUnderAttack(move[0], move[1], self.oppositeColor(pieceColor))]
 
         return moves
     
+    def isCellUnderAttack(self, x, y, attackerColor):
+        for i in range(0, 8):
+            for j in range(0, 8):
+                piece = self.board[i][j]
+                if piece and piece[0] == attackerColor:
+                    # ignoreChecks = True to avoid infinite recursion
+                    moves = self.getMovesForPiece(i, j, True)
+                    if (x, y) in moves:
+                        return True
+        return False
+    
+    def isPlayerInCheck(self, playerColor):
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[0] == playerColor and piece[1] == 'K':
+                    return self.isCellUnderAttack(x, y, self.oppositeColor(playerColor))
+                
+    ############################################################
+    # Turn specific methods
+    ############################################################
+
     # Attempts to make a move for the piece at fromCell to toCell. If the move is invalid, does nothing.
     # Changes the turn if the move is valid.
     def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
@@ -313,23 +335,14 @@ class Board:
     def nextTurn(self):
         self.turn = 'W' if self.turn == 'B' else 'B'
 
-    def isCellUnderAttack(self, x, y):
-        for i in range(0, 8):
-            for j in range(0, 8):
-                piece = self.board[i][j]
-                if piece and piece[0] != self.turn:
-                    # ignoreChecks = True to avoid infinite recursion
-                    moves = self.getMovesForPiece(i, j, True)
-                    if (x, y) in moves:
-                        return True
-        return False
-
     def isCurrentPlayerInCheck(self):
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x][y]
-                if piece and piece[0] == self.turn and piece[1] == 'K':
-                    return self.isCellUnderAttack(x, y)
+        return self.isPlayerInCheck(self.turn)
+
+    ############################################################
+    # Utility methods
+    ############################################################
+    def oppositeColor(self, color):
+        return 'W' if color == 'B' else 'B'
 
     def __str__(self):
         str = ''
