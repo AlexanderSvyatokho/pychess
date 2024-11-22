@@ -26,6 +26,21 @@ class Board:
             self.board[i][6] = 'BP'
             self.board[i][7] = 'B' + pieces[i]
 
+    def setToDefaultTest(self):
+        self.turn = 'W'
+        self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
+
+        # Set up the board with pieces
+        pieces = ['R', None, None, 'Q', 'K', None, None, 'R']
+        for i in range(8):
+            self.board[i][0] = 'W' + pieces[i] if pieces[i] else None
+            self.board[i][1] = None
+            self.board[i][6] = None
+            self.board[i][7] = 'B' + pieces[i] if pieces[i] else None
+
+        self.board[1][2] = 'WP'
+        self.board[6][6] = 'BP'
+
     def getPiece(self, x, y):
         return self.board[x][y]
      
@@ -480,6 +495,33 @@ class Board:
     
     def isCurrentPlayerInCheckmate(self):
         return self.isPlayerInCheck(self.turn) and not self.hasValidMoves(self.turn)
+
+    def isStalemate(self):
+        return not self.isPlayerInCheck(self.turn) and not self.hasValidMoves(self.turn)
+
+    def isDrawByInsufficientMaterial(self):
+        # Draw by insufficient material is if there is no way to end the game in checkmate:
+        # - Only kings left
+        # - King and single bishop
+        # - King and single knight
+        whitePieces = []
+        blackPieces = []
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[1] != 'K':
+                    if piece[1] == 'P' or piece[1] == 'Q' or piece[1] == 'R':
+                        return False
+                    
+                    if piece[0] == 'W':
+                        whitePieces.append(piece)
+                    else:
+                        blackPieces.append(piece)
+
+        return len(whitePieces) <= 1 and len(blackPieces) <= 1
+
+    def isDraw(self):
+        return  self.isStalemate() or self.isDrawByInsufficientMaterial()
 
     ############################################################
     # Utility methods

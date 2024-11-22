@@ -3,8 +3,8 @@
 # ToDo
 
 Core:
-- Stale mate logic
-- O-O and O-O-O
+- Promotion: auto queen
+- After made or draw the game is finished
 - Empasane move
 - Storing mate and stale mate in Board?
 

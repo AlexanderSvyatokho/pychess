@@ -69,6 +69,8 @@ class BoardWidget(QtWidgets.QWidget):
                 if piece:
                     if piece == (self.board.getTurn() + 'K') and self.board.isCurrentPlayerInCheckmate():
                         painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece+'#'))
+                    elif piece[1] == 'K' and self.board.isDraw():
+                        painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece+'='))
                     else:
                         painter.drawImage(x * CELL_SIZE, y * CELL_SIZE, self.boardImages.getImage(piece))
 
