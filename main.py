@@ -9,7 +9,7 @@ from Constants import CELL_SIZE
 
 logging.basicConfig(level=logging.DEBUG)
 
-class MyWidget(QtWidgets.QWidget):
+class PyChess(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.board = BoardWidget()
@@ -22,7 +22,7 @@ class MyWidget(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 
-    widget = MyWidget()
+    widget = PyChess()
     widget.resize(800, 600)
     widget.show()
 

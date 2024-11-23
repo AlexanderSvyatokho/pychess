@@ -17,7 +17,12 @@ class Board:
     def setToDefault(self):
         self.turn = 'W'
         self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
-
+        self.gameState = { 
+            'draw': { 'draw': False, 'reason': '' },
+            'check': { 'check': False, 'who': '' },
+            'checkmate': { 'checkmate': False, 'who': '' },
+        }
+        
         # Set up the board with pieces
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         for i in range(8):
@@ -29,6 +34,11 @@ class Board:
     def setToDefaultTest(self):
         self.turn = 'W'
         self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
+        self.gameState = { 
+            'draw': { 'draw': False, 'reason': '' },
+            'check': { 'check': False, 'who': '' },
+            'checkmate': { 'checkmate': False, 'who': '' },
+        }
 
         # Set up the board with pieces
         pieces = ['R', None, None, 'Q', 'K', None, None, 'R']
@@ -428,12 +438,21 @@ class Board:
                     if self.getMovesForPiece(x, y):
                         return True
         return False
+    
+    def promotePawns(self):
+        # Autopromote pawns on the last rows to queens
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece and piece[1] == 'P' and (y == 0 or y == 7):
+                    self.board[x][y] = piece[0] + 'Q'
                 
     # Moves a piece from fromCell to toCell without checking if the move is valid
     # Precondition (not verified): piece at x, y
     def forceMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
         self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
         self.board[fromCell[0]][fromCell[1]] = None
+        self.promotePawns()
                 
     ############################################################
     # Turn specific methods
@@ -485,6 +504,7 @@ class Board:
             self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
             self.board[fromCell[0]][fromCell[1]] = None
         
+        self.promotePawns()
         self.nextTurn()
 
     def nextTurn(self):
