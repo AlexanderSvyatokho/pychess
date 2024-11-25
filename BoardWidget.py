@@ -2,8 +2,8 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QRect, QPoint
 from PySide6.QtGui import QPainter, QColor
 
-from Board import Board;
-from BoardImages import BoardImages;
+from Board import Board
+from BoardImages import BoardImages
 from Constants import CELL_SIZE
 
 class BoardWidget(QtWidgets.QWidget):

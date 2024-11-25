@@ -1,27 +1,21 @@
 import logging
-
+from GameState import GameState
 
 # Stores chess board's state
 class Board:
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.gameState = GameState()
         self.setToDefault()
 
     def copy(self):
         newBoard = Board()
         newBoard.board = [col.copy() for col in self.board]
-        newBoard.turn = self.turn
-        newBoard.canCastle = self.canCastle.copy()
+        newBoard.gameState = self.gameState.copy()
         return newBoard
 
     def setToDefault(self):
-        self.turn = 'W'
-        self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
-        self.gameState = { 
-            'draw': { 'draw': False, 'reason': '' },
-            'check': { 'check': False, 'who': '' },
-            'checkmate': { 'checkmate': False, 'who': '' },
-        }
+        self.gameState.setToDefault()
         
         # Set up the board with pieces
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
@@ -32,13 +26,7 @@ class Board:
             self.board[i][7] = 'B' + pieces[i]
 
     def setToDefaultTest(self):
-        self.turn = 'W'
-        self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
-        self.gameState = { 
-            'draw': { 'draw': False, 'reason': '' },
-            'check': { 'check': False, 'who': '' },
-            'checkmate': { 'checkmate': False, 'who': '' },
-        }
+        self.gameState.setToDefault()
 
         # Set up the board with pieces
         pieces = ['R', None, None, 'Q', 'K', None, None, 'R']
@@ -55,7 +43,7 @@ class Board:
         return self.board[x][y]
      
     def getTurn(self):
-        return self.turn
+        return self.gameState.turn
     
     ############################################################
     # Moves handling methods
@@ -326,14 +314,14 @@ class Board:
 
         # Castling
         if pieceColor == 'W':
-            if self.canCastle['W']['K'] and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
+            if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
                 moves.append((6, 0))
-            if self.canCastle['W']['Q'] and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
+            if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
                 moves.append((2, 0))
         else:
-            if self.canCastle['B']['K'] and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
+            if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
                 moves.append((6, 7))
-            if self.canCastle['B']['Q'] and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
+            if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
                 moves.append((2, 7))
 
         return moves
@@ -401,8 +389,7 @@ class Board:
             self.forceMove((kingX, kingY), (kingX - 2, kingY))
             self.forceMove((kingX - 4, kingY), (kingX - 1, kingY))
         
-        self.canCastle[pieceColor]['K'] = False
-        self.canCastle[pieceColor]['Q'] = False
+        self.gameState.setCannotCastle(pieceColor)
 
     def getValidMoves(self, playerColor):
         moves = []
@@ -468,8 +455,8 @@ class Board:
             logging.warning(f'Board: makeMove: No piece at {fromCell[0], fromCell[1]}')
             return
         
-        if (not piece or piece[0] != self.turn):
-            logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.turn}. Piece: {piece}')
+        if (not piece or piece[0] != self.getTurn()):
+            logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.getTurn()}. Piece: {piece}')
             return
         
         validMoves = self.getMovesForPiece(fromCell[0], fromCell[1])
@@ -485,39 +472,35 @@ class Board:
 
             # King moves
             if piece[1] == 'K':
-                self.canCastle[self.turn]['K'] = False
-                self.canCastle[self.turn]['Q'] = False
+                self.gameState.setCannotCastle(self.getTurn())
 
             # Rook moves
             if piece[1] == 'R':
                 if pieceColor == 'W':
                     if fromCell == (0, 0):
-                        self.canCastle[self.turn]['Q'] = False
+                        self.gameState.setCannotCastle(self.getTurn(), 'Q')
                     elif fromCell == (7, 0):
-                        self.canCastle[self.turn]['K'] = False
+                        self.gameState.setCannotCastle(self.getTurn(), 'K')
                 else:
                     if fromCell == (0, 7):
-                        self.canCastle[self.turn]['Q'] = False
+                        self.gameState.setCannotCastle(self.getTurn(), 'Q')
                     elif fromCell == (7, 7):
-                        self.canCastle[self.turn]['K'] = False
+                        self.gameState.setCannotCastle(self.getTurn(), 'K')
 
             self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
             self.board[fromCell[0]][fromCell[1]] = None
         
         self.promotePawns()
-        self.nextTurn()
-
-    def nextTurn(self):
-        self.turn = 'W' if self.turn == 'B' else 'B'
+        self.gameState.nextTurn()
 
     def isCurrentPlayerInCheck(self):
-        return self.isPlayerInCheck(self.turn)
+        return self.isPlayerInCheck(self.getTurn())
     
     def isCurrentPlayerInCheckmate(self):
-        return self.isPlayerInCheck(self.turn) and not self.hasValidMoves(self.turn)
+        return self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn())
 
     def isStalemate(self):
-        return not self.isPlayerInCheck(self.turn) and not self.hasValidMoves(self.turn)
+        return not self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn())
 
     def isDrawByInsufficientMaterial(self):
         # Draw by insufficient material is if there is no way to end the game in checkmate:
@@ -551,8 +534,8 @@ class Board:
 
     def printState(self):
         print('Board state:')
-        print(f'Turn: {self.turn}')
-        print(f'Can Castle: {self.canCastle}')
+        print(f'Turn: {self.getTurn()}')
+        print(f'Can Castle: {self.gameState.castleState}')
 
     def __str__(self):
         str = ''
