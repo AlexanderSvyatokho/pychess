@@ -1,5 +1,6 @@
 import logging
 from GameState import GameState
+from Utils import oppositeColor
 
 # Stores chess board's state
 class Board:
@@ -415,7 +416,7 @@ class Board:
             for x in range(0, 8):
                 piece = self.board[x][y]
                 if piece and piece[0] == playerColor and piece[1] == 'K':
-                    return self.isCellUnderAttack(x, y, self.oppositeColor(playerColor))
+                    return self.isCellUnderAttack(x, y, oppositeColor(playerColor))
                 
     def hasValidMoves(self, playerColor):
         for y in range(0, 8):
@@ -529,9 +530,6 @@ class Board:
     ############################################################
     # Utility methods
     ############################################################
-    def oppositeColor(self, color):
-        return 'W' if color == 'B' else 'B'
-
     def printState(self):
         print('Board state:')
         print(f'Turn: {self.getTurn()}')

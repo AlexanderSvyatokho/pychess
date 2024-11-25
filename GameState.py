@@ -19,9 +19,6 @@ class GameState:
         newGameState.castleState = copy.deepcopy(self.castleState)
         newGameState.gameState = copy.deepcopy(self.gameState)
         return newGameState
-
-    def getTurn(self):
-        return self.turn
     
     def nextTurn(self):
         self.turn = 'W' if self.turn == 'B' else 'B'
@@ -35,4 +32,3 @@ class GameState:
         elif(side == 'KQ'):
             self.castleState[color]['K'] = False
             self.castleState[color]['Q'] = False    
-            
