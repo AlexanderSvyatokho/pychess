@@ -446,24 +446,24 @@ class Board:
     # Turn specific methods
     ############################################################
 
-    # Attempts to make a move for the piece at fromCell to toCell. If the move is invalid, does nothing.
-    # Changes the turn if the move is valid.
+    # Attempts to make a move for the piece at fromCell to toCell. If the move is invalid, does nothing
+    # and returns False. Changes the turn if the move is valid and returns True.
     def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
         piece = self.getPiece(fromCell[0], fromCell[1]) 
         pieceColor = piece[0]
 
         if (not piece):
             logging.warning(f'Board: makeMove: No piece at {fromCell[0], fromCell[1]}')
-            return
+            return False
         
         if (not piece or piece[0] != self.getTurn()):
             logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.getTurn()}. Piece: {piece}')
-            return
+            return False
         
         validMoves = self.getMovesForPiece(fromCell[0], fromCell[1])
         if toCell not in validMoves:
             logging.warning(f'Board: makeMove: Invalid move for a piece at {fromCell[0], fromCell[1]}')
-            return
+            return False
         
         if piece[1] == 'K' and abs(fromCell[0] - toCell[0]) >= 2:
             # Castling
@@ -493,6 +493,8 @@ class Board:
         
         self.promotePawns()
         self.gameState.nextTurn()
+
+        return True
 
     def isCurrentPlayerInCheck(self):
         return self.isPlayerInCheck(self.getTurn())
