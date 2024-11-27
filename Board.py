@@ -1,6 +1,7 @@
 import logging
 from GameState import GameState
 from Utils import oppositeColor
+from Constants import *
 
 # Stores chess board's state
 class Board:
@@ -493,19 +494,32 @@ class Board:
         
         self.promotePawns()
         self.gameState.nextTurn()
+        self.updateGameState()
 
         return True
-
-    def isCurrentPlayerInCheck(self):
-        return self.isPlayerInCheck(self.getTurn())
     
-    def isCurrentPlayerInCheckmate(self):
-        return self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn())
+    def updateGameState(self):
+        self.updateCheckState()
+        self.updateCheckmateState()
+        self.updateDrawState()
 
-    def isStalemate(self):
+    def updateCheckState(self):
+        self.gameState.setCheck(self.getTurn(), self.isPlayerInCheck(self.getTurn()))
+
+    def updateCheckmateState(self):
+        if self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn()):
+            self.gameState.setCheckmate(self.getTurn())
+
+    def updateDrawState(self):
+        if self.checkStalemate():
+            self.gameState.setDraw(DrawType.STALEMATE)
+        elif self.checkDrawByInsufficientMaterial():
+            self.gameState.setDraw(DrawType.INSUFFICIENT_MATERIAL)
+
+    def checkStalemate(self):
         return not self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn())
-
-    def isDrawByInsufficientMaterial(self):
+    
+    def checkDrawByInsufficientMaterial(self):
         # Draw by insufficient material is if there is no way to end the game in checkmate:
         # - Only kings left
         # - King and single bishop
@@ -526,8 +540,14 @@ class Board:
 
         return len(whitePieces) <= 1 and len(blackPieces) <= 1
 
+    def isCurrentPlayerInCheck(self):
+        return self.gameState.isCurrentPlayerInCheck()
+    
+    def isCurrentPlayerInCheckmate(self):
+        return self.gameState.isCurrentPlayerInCheckmate()
+
     def isDraw(self):
-        return  self.isStalemate() or self.isDrawByInsufficientMaterial()
+        return  self.gameState.isDraw()
 
     ############################################################
     # Utility methods

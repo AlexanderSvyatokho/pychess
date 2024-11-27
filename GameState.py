@@ -31,4 +31,28 @@ class GameState:
             self.castleState[color][side] = False
         elif(side == 'KQ'):
             self.castleState[color]['K'] = False
-            self.castleState[color]['Q'] = False    
+            self.castleState[color]['Q'] = False
+
+    def isCurrentPlayerInCheck(self):
+        return self.gameState['check'] == {'check': True, 'who': self.turn}
+    
+    def isCurrentPlayerInCheckmate(self):
+        return self.gameState['checkmate'] == {'checkmate': True, 'who': self.turn}
+
+    def isDraw(self):
+        return self.gameState['draw']['draw'] == True
+
+    def setDraw(self, reason: str):
+        self.gameState['draw']['draw'] = True
+        self.gameState['draw']['reason'] = reason
+
+    def setCheck(self, who: str, state: bool):
+        self.gameState['check']['check'] = state
+        self.gameState['check']['who'] = who
+
+    def setCheckmate(self, who: str):
+        self.gameState['checkmate']['checkmate'] = True
+        self.gameState['checkmate']['who'] = who        
+
+    def isGameOngoing(self):
+        return self.gameState['checkmate']['checkmate'] == False and self.gameState['draw']['draw'] == False

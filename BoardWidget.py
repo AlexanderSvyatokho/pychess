@@ -24,13 +24,15 @@ class BoardWidget(QtWidgets.QWidget):
         x = int(event.position().x() // CELL_SIZE)
         y = int(7 - event.position().y() // CELL_SIZE)
 
+        if (x < 0 or x > 7 or y < 0 or y > 7):
+            return
+        
         cellClicked = self.board.getPiece(x, y)
 
         if self.selectedCell:
             self.board.makeMove(self.selectedCell, (x, y))
             self.selectedCell = None
             self.possibleMoves = []
-            self.board.printState()
         else:
             if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)
