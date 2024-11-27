@@ -398,6 +398,7 @@ class Board:
         
         self.gameState.setCannotCastle(pieceColor)
 
+    # Get a list of all valid moves for a player as a list of tuples (fromCell, toCell)
     def getValidMoves(self, playerColor) -> list[tuple[tuple[int, int], tuple[int, int]]]:
         moves = []
         for y in range(0, 8):
@@ -509,6 +510,7 @@ class Board:
         self.updateCheckState()
         self.updateCheckmateState()
         self.updateDrawState()
+        self.updateGameScore()
 
     def updateCheckState(self):
         self.gameState.setCheck(self.getTurn(), self.isPlayerInCheck(self.getTurn()))
@@ -555,6 +557,37 @@ class Board:
 
     def isDraw(self):
         return  self.gameState.isDraw()
+    
+    # Precondition: checkmate and check states are updated
+    def updateGameScore(self):
+        if self.isCurrentPlayerInCheckmate():
+            if self.getTurn() == 'B':
+                self.gameState.score = 1000
+            else:
+                self.gameState.score = -1000
+            return
+        
+        if self.isDraw():
+            self.gameState.score = 0
+            return
+
+        # Calculate the score based on the pieces left
+        # 1 point for pawn, 3 points for knight or bishop, 5 points for rook, 9 points for queen
+        score = 0
+        for y in range(0, 8):
+            for x in range(0, 8):
+                piece = self.board[x][y]
+                if piece:
+                    if piece[1] == 'P':
+                        score += (1 if piece[0] == 'W' else -1)
+                    elif piece[1] == 'N' or piece[1] == 'B':
+                        score += (3 if piece[0] == 'W' else -3)
+                    elif piece[1] == 'R':
+                        score += (5 if piece[0] == 'W' else -5)
+                    elif piece[1] == 'Q':
+                        score += (9 if piece[0] == 'W' else -9)
+
+        self.gameState.score = score
 
     ############################################################
     # Utility methods

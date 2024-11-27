@@ -2,7 +2,7 @@ import sys
 import logging
 
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QGridLayout, QStatusBar
 
 from BoardWidget import BoardWidget
 from GameControlWidget import GameControlWidget
@@ -20,12 +20,15 @@ class PyChess(QtWidgets.QWidget):
         self.bot = None
         self.boardWidget = BoardWidget(self.board)
         self.gameControl = GameControlWidget()
-
+        self.statusBar = QStatusBar(self)
+        self.statusBar.showMessage('Welcome to PyChess!')
+        
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.boardWidget, 0, 0)
         mainLayout.addWidget(self.gameControl, 0, 1)
+        mainLayout.addWidget(self.statusBar, 1, 0, 1, 2)
         self.setLayout(mainLayout)
-        self.setWindowTitle("Chess")
+        self.setWindowTitle('PyChess')
 
         self.gameControl.newGameStarted.connect(self.onNewGame)
         self.boardWidget.moveMadeByPlayer.connect(self.onMoveMadeByPlayer)
@@ -33,9 +36,9 @@ class PyChess(QtWidgets.QWidget):
     @QtCore.Slot()
     def onNewGame(self, opponent):
         msgBox = QtWidgets.QMessageBox()
-        msgBox.setWindowTitle("New Game")
+        msgBox.setWindowTitle('New Game')
         msgBox.setIcon(QtWidgets.QMessageBox.Question)
-        msgBox.setText("Are you sure you want to start a new game?")
+        msgBox.setText('Are you sure you want to start a new game?')
         msgBox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         ret = msgBox.exec()
 
@@ -52,6 +55,8 @@ class PyChess(QtWidgets.QWidget):
         if self.bot:
             self.bot.makeMove(self.board)
             self.boardWidget.update()
+
+        self.statusBar.showMessage(f'Score: {self.board.gameState.score}')
         
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
