@@ -79,7 +79,7 @@ class Board:
         elif (piece[1] == 'K'):
             moves = self.getMovesForKing(x, y)
         else:
-            logging.error('Board: getValidMovesForPiece: unknown piece type')
+            logging.error('Board: getMovesForPiece: unknown piece type')
             return []
         
         def checkFilter(move):
@@ -398,13 +398,15 @@ class Board:
         
         self.gameState.setCannotCastle(pieceColor)
 
-    def getValidMoves(self, playerColor):
+    def getValidMoves(self, playerColor) -> list[tuple[tuple[int, int], tuple[int, int]]]:
         moves = []
         for y in range(0, 8):
             for x in range(0, 8):
                 piece = self.board[x][y]
                 if piece and piece[0] == playerColor:
-                    moves += self.getMovesForPiece(x, y)
+                    pieceMoves = self.getMovesForPiece(x, y)
+                    for move in pieceMoves:
+                        moves.append(((x, y), move))
         return moves
     
     def isCellUnderAttack(self, x, y, attackerColor):

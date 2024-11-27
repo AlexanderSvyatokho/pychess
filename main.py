@@ -8,7 +8,8 @@ from BoardWidget import BoardWidget
 from GameControlWidget import GameControlWidget
 
 from Board import Board
-from Constants import CELL_SIZE
+from BotRandom import BotRandom
+from Constants import *
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -16,16 +17,18 @@ class PyChess(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.board = Board()
+        self.bot = None
         self.boardWidget = BoardWidget(self.board)
         self.gameControl = GameControlWidget()
 
-        main_layout = QGridLayout()
-        main_layout.addWidget(self.boardWidget, 0, 0)
-        main_layout.addWidget(self.gameControl, 0, 1)
-        self.setLayout(main_layout)
+        mainLayout = QGridLayout()
+        mainLayout.addWidget(self.boardWidget, 0, 0)
+        mainLayout.addWidget(self.gameControl, 0, 1)
+        self.setLayout(mainLayout)
         self.setWindowTitle("Chess")
 
         self.gameControl.newGameStarted.connect(self.onNewGame)
+        self.boardWidget.moveMadeByPlayer.connect(self.onMoveMadeByPlayer)
 
     @QtCore.Slot()
     def onNewGame(self, opponent):
@@ -38,8 +41,18 @@ class PyChess(QtWidgets.QWidget):
 
         if ret == QtWidgets.QMessageBox.Yes:
             self.board.reset()
+            if opponent == OpponentType.BOT_RANDOM.value:
+                self.bot = BotRandom()
+            else:
+                self.bot = None
             self.boardWidget.update()
 
+    @QtCore.Slot()
+    def onMoveMadeByPlayer(self):
+        if self.bot:
+            self.bot.makeMove(self.board)
+            self.boardWidget.update()
+        
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 

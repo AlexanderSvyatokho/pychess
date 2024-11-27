@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QRect, QPoint
 from PySide6.QtGui import QPainter, QColor
 
@@ -7,6 +7,9 @@ from BoardImages import BoardImages
 from Constants import CELL_SIZE
 
 class BoardWidget(QtWidgets.QWidget):
+
+    moveMadeByPlayer = QtCore.Signal(object)
+
     def __init__(self, board: Board):
         super().__init__()
         self.setFixedSize(CELL_SIZE * 8, CELL_SIZE * 8)
@@ -31,9 +34,11 @@ class BoardWidget(QtWidgets.QWidget):
         cellClicked = self.board.getPiece(x, y)
 
         if self.selectedCell:
-            self.board.makeMove(self.selectedCell, (x, y))
+            moveMade = self.board.makeMove(self.selectedCell, (x, y))
             self.selectedCell = None
             self.possibleMoves = []
+            if moveMade:
+                self.moveMadeByPlayer.emit(None)
         else:
             if self.selectedCell != (x, y) and cellClicked and cellClicked[0] == self.board.getTurn():
                 self.selectedCell = (x, y)
