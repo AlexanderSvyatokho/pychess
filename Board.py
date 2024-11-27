@@ -20,6 +20,7 @@ class Board:
         self.gameState.setToDefault()
         
         # Set up the board with pieces
+        self.board = [[None for _ in range(8)] for _ in range(8)]
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         for i in range(8):
             self.board[i][0] = 'W' + pieces[i]
@@ -31,6 +32,7 @@ class Board:
         self.gameState.setToDefault()
 
         # Set up the board with pieces
+        self.board = [[None for _ in range(8)] for _ in range(8)]
         pieces = ['R', None, None, 'Q', 'K', None, None, 'R']
         for i in range(8):
             self.board[i][0] = 'W' + pieces[i] if pieces[i] else None
@@ -40,6 +42,9 @@ class Board:
 
         self.board[1][2] = 'WP'
         self.board[6][6] = 'BP'
+
+    def reset(self):
+        self.setToDefault()
 
     def getPiece(self, x, y):
         return self.board[x][y]

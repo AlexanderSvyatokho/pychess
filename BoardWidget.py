@@ -7,9 +7,10 @@ from BoardImages import BoardImages
 from Constants import CELL_SIZE
 
 class BoardWidget(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, board: Board):
         super().__init__()
-        self.board = Board()
+        self.setFixedSize(CELL_SIZE * 8, CELL_SIZE * 8)
+        self.board = board
         self.boardImages = BoardImages(CELL_SIZE)
         self.selectedCell = None
         self.possibleMoves = []
