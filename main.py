@@ -9,6 +9,7 @@ from GameControlWidget import GameControlWidget
 
 from Board import Board
 from BotRandom import BotRandom
+from BotThread import BotThread
 from Constants import *
 
 logging.basicConfig(level=logging.DEBUG)
@@ -53,10 +54,18 @@ class PyChess(QtWidgets.QWidget):
     @QtCore.Slot()
     def onMoveMadeByPlayer(self):
         if self.bot:
-            self.bot.makeMove(self.board)
-            self.boardWidget.update()
+            # Run the bot in a separate thread to avoid blocking the UI
+            self.botThread = BotThread(self.bot, self.board)
+            self.botThread.finished.connect(self.onBotMoveReady)
+            self.botThread.start()
 
         self.statusBar.showMessage(f'Score: {self.board.gameState.score}')
+
+    @QtCore.Slot()
+    def onBotMoveReady(self):
+        self.boardWidget.update()
+        self.botThread.quit()
+        self.botThread.wait()
         
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])

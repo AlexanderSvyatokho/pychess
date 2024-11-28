@@ -1,4 +1,5 @@
 import random
+import time
 from Board import Board
 from BotBase import BotBase
 
@@ -11,5 +12,6 @@ class BotRandom(BotBase):
         moves = board.getValidMoves(board.getTurn())
         if(len(moves) > 0):
             rnd = random.randint(0, len(moves) - 1)
+            time.sleep(0.3) # Imitate thinking
             board.makeMove(moves[rnd][0], moves[rnd][1])
         

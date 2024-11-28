@@ -32,7 +32,7 @@ class BoardWidget(QtWidgets.QWidget):
             return
         
         cellClicked = self.board.getPiece(x, y)
-
+        
         if self.selectedCell:
             moveMade = self.board.makeMove(self.selectedCell, (x, y))
             self.selectedCell = None
