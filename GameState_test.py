@@ -7,13 +7,33 @@ def testDefaultState():
     assert gs.getCanCastle('W', 'K') == True
     assert gs.getCanCastle('B', 'K') == True
 
+def testCopyState():
+    gs = GameState()
+    gs.turn = 'B'
+    gs.halfMoves = 10
+    gs.score = 100
+    gs.setCannotCastle('W', 'K')
+    gs.setCheck('W', True)
+    gs.setDraw(DrawType.STALEMATE)
+
+    gsCopy = gs.copy()
+    assert gsCopy.turn == 'B'
+    assert gsCopy.halfMoves == 10
+    assert gsCopy.score == 100  
+    assert gsCopy.getCanCastle('W', 'K') == False
+    assert gsCopy.getCanCastle('W', 'Q') == True
+    assert gsCopy.getCanCastle('B', 'K') == True
+    assert gsCopy.getCanCastle('B', 'Q') == True
+
 def testTurn():
     gs = GameState()
     assert gs.turn == 'W'
     gs.nextTurn()
     assert gs.turn == 'B'
+    assert gs.halfMoves == 1
     gs.nextTurn()
     assert gs.turn == 'W'   
+    assert gs.halfMoves == 2
 
 def testSetCannotCastle():
     gs = GameState()

@@ -18,6 +18,7 @@ class GameControlWidget(QtWidgets.QWidget):
         self.cmbOpponent.addItem(OpponentType.HUMAN.value)
         self.cmbOpponent.addItem(OpponentType.BOT_RANDOM.value)
         self.cmbOpponent.addItem(OpponentType.BOT_GREEDY.value)
+        self.cmbOpponent.addItem(OpponentType.BOT_DEPTH1.value)
       
         self.vboxNewGame = QtWidgets.QVBoxLayout()
         self.vboxNewGame.addWidget(self.txtSelectOpponent)

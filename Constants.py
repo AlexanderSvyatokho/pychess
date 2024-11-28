@@ -8,5 +8,6 @@ class DrawType(Enum):
 
 class OpponentType(Enum):
     HUMAN = 'Human vs Human'
-    BOT_RANDOM = 'Bot: Random'
-    BOT_GREEDY = 'Bot: Greedy'
+    BOT_RANDOM = 'Bot [1]: Random'
+    BOT_GREEDY = 'Bot [2]: Greedy Silly'
+    BOT_DEPTH1= 'Bot [3]: Depth One'

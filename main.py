@@ -12,6 +12,7 @@ from Board import Board
 from BotThread import BotThread
 from BotRandom import BotRandom
 from BotGreedy import BotGreedy
+from BotDepth1 import BotDepth1
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -37,38 +38,49 @@ class PyChess(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def onNewGame(self, opponent):
-        msgBox = QtWidgets.QMessageBox()
-        msgBox.setWindowTitle('New Game')
-        msgBox.setIcon(QtWidgets.QMessageBox.Question)
-        msgBox.setText('Are you sure you want to start a new game?')
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        ret = msgBox.exec()
 
-        if ret == QtWidgets.QMessageBox.Yes:
+        userConfirmed = True
+
+        if self.board.gameState.halfMoves > 0:
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle('New Game')
+            msgBox.setIcon(QtWidgets.QMessageBox.Question)
+            msgBox.setText('Are you sure you want to start a new game?')
+            msgBox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            ret = msgBox.exec()
+            userConfirmed = ret == QtWidgets.QMessageBox.Yes
+
+        if userConfirmed:
             self.board.reset()
             if opponent == OpponentType.BOT_RANDOM.value:
                 self.bot = BotRandom()
-            if opponent == OpponentType.BOT_GREEDY.value:
+            elif opponent == OpponentType.BOT_GREEDY.value:
                 self.bot = BotGreedy()
+            elif opponent == OpponentType.BOT_DEPTH1.value:
+                self.bot = BotDepth1()
             else:
                 self.bot = None
             self.boardWidget.update()
+            self.updateStatusBar()
 
     @QtCore.Slot()
     def onMoveMadeByPlayer(self):
         if self.bot:
             # Run the bot in a separate thread to avoid blocking the UI
             self.botThread = BotThread(self.bot, self.board)
-            self.botThread.finished.connect(self.onBotMoveReady)
+            self.botThread.finished.connect(self.onMoveMadeByBot)
             self.botThread.start()
-
-        self.statusBar.showMessage(f'Score: {self.board.gameState.score}')
+        self.updateStatusBar()
 
     @QtCore.Slot()
-    def onBotMoveReady(self):
+    def onMoveMadeByBot(self):
         self.boardWidget.update()
         self.botThread.quit()
         self.botThread.wait()
+        self.updateStatusBar()
+
+    def updateStatusBar(self):
+        self.statusBar.showMessage(f'Move: {self.board.gameState.halfMoves // 2 + 1} | Score: {self.board.gameState.score}')
         
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])

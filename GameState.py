@@ -6,6 +6,7 @@ class GameState:
 
     def setToDefault(self):
         self.turn = 'W'
+        self.halfMoves = 0
         self.score = 0
         self.castleState = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
         self.gameState = { 
@@ -17,6 +18,7 @@ class GameState:
     def copy(self):
         newGameState = GameState()
         newGameState.turn = self.turn
+        newGameState.halfMoves = self.halfMoves
         newGameState.score = self.score
         newGameState.castleState = copy.deepcopy(self.castleState)
         newGameState.gameState = copy.deepcopy(self.gameState)
@@ -24,6 +26,7 @@ class GameState:
     
     def nextTurn(self):
         self.turn = 'W' if self.turn == 'B' else 'B'
+        self.halfMoves += 1
 
     def getCanCastle(self, color: str, side: str):
         return self.castleState[color][side]

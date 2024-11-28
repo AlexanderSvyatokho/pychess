@@ -3,7 +3,6 @@
 # ToDo
 
 Core:
-  - Greedy bot: makes a move that gives the highest score
   - One move ahead bot: makes a move that gives the highest score after his and opponent's moves
   - N moves ahead bot
   - GUI: moves list
