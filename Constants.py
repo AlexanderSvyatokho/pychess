@@ -9,3 +9,4 @@ class DrawType(Enum):
 class OpponentType(Enum):
     HUMAN = 'Human vs Human'
     BOT_RANDOM = 'Bot: Random'
+    BOT_GREEDY = 'Bot: Greedy'

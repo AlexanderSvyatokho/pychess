@@ -7,10 +7,11 @@ from PySide6.QtWidgets import QGridLayout, QStatusBar
 from BoardWidget import BoardWidget
 from GameControlWidget import GameControlWidget
 
-from Board import Board
-from BotRandom import BotRandom
-from BotThread import BotThread
 from Constants import *
+from Board import Board
+from BotThread import BotThread
+from BotRandom import BotRandom
+from BotGreedy import BotGreedy
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -47,6 +48,8 @@ class PyChess(QtWidgets.QWidget):
             self.board.reset()
             if opponent == OpponentType.BOT_RANDOM.value:
                 self.bot = BotRandom()
+            if opponent == OpponentType.BOT_GREEDY.value:
+                self.bot = BotGreedy()
             else:
                 self.bot = None
             self.boardWidget.update()
