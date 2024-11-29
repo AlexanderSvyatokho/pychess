@@ -1,6 +1,8 @@
 from PySide6 import QtWidgets, QtCore
 
 from Constants import *
+from GameState import GameState
+from Utils import *
 
 class GameControlWidget(QtWidgets.QWidget):
     
@@ -30,10 +32,6 @@ class GameControlWidget(QtWidgets.QWidget):
         # Moves list group box
         self.gbGameMoves = QtWidgets.QGroupBox('Game Moves')
         self.lstGameMoves = QtWidgets.QListWidget(self)
-        QtWidgets.QListWidgetItem('1: e2-e4 e7-e5', self.lstGameMoves)
-        QtWidgets.QListWidgetItem('2: e2-e4 e7-e5', self.lstGameMoves)
-        QtWidgets.QListWidgetItem('3: e2-e4 e7-e5', self.lstGameMoves)
-        QtWidgets.QListWidgetItem('3: ToDo ToDo', self.lstGameMoves)
        
         self.vboxMovesList = QtWidgets.QVBoxLayout()
         self.vboxMovesList.addWidget(self.lstGameMoves)
@@ -50,3 +48,16 @@ class GameControlWidget(QtWidgets.QWidget):
     def btnNewGameClicked(self):
         opponent = self.cmbOpponent.currentText()
         self.newGameStarted.emit(opponent)
+
+    def updateGamesMoves(self, gameState: GameState):
+        self.lstGameMoves.clear()
+
+        textToAdd = ''
+        for i in range(len(gameState.halfMoves)):
+            if i % 2 == 0:
+                textToAdd = f'{i//2 + 1}: {fromCell(gameState.halfMoves[i][0])}-{fromCell(gameState.halfMoves[i][1])}'
+                if i == len(gameState.halfMoves) - 1:
+                    QtWidgets.QListWidgetItem(textToAdd, self.lstGameMoves)
+            else:
+                textToAdd += f' {fromCell(gameState.halfMoves[i][0])}-{fromCell(gameState.halfMoves[i][1])}'
+                QtWidgets.QListWidgetItem(textToAdd, self.lstGameMoves)

@@ -41,7 +41,7 @@ class PyChess(QtWidgets.QWidget):
 
         userConfirmed = True
 
-        if self.board.gameState.halfMoves > 0:
+        if len(self.board.gameState.halfMoves) > 0:
             msgBox = QtWidgets.QMessageBox()
             msgBox.setWindowTitle('New Game')
             msgBox.setIcon(QtWidgets.QMessageBox.Question)
@@ -61,7 +61,7 @@ class PyChess(QtWidgets.QWidget):
             else:
                 self.bot = None
             self.boardWidget.update()
-            self.updateStatusBar()
+            self.updateUIAfterMove()
 
     @QtCore.Slot()
     def onMoveMadeByPlayer(self):
@@ -70,18 +70,19 @@ class PyChess(QtWidgets.QWidget):
             self.botThread = BotThread(self.bot, self.board)
             self.botThread.finished.connect(self.onMoveMadeByBot)
             self.botThread.start()
-        self.updateStatusBar()
+        self.updateUIAfterMove()
 
     @QtCore.Slot()
     def onMoveMadeByBot(self):
         self.boardWidget.update()
         self.botThread.quit()
         self.botThread.wait()
-        self.updateStatusBar()
+        self.updateUIAfterMove()
 
-    def updateStatusBar(self):
-        self.statusBar.showMessage(f'Move: {self.board.gameState.halfMoves // 2 + 1} | Score: {self.board.gameState.score}')
-        
+    def updateUIAfterMove(self):
+        self.statusBar.showMessage(f'Move: {len(self.board.gameState.halfMoves) // 2 + 1} | Score: {self.board.gameState.score}')
+        self.gameControl.updateGamesMoves(self.board.gameState)
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 

@@ -10,7 +10,7 @@ def testDefaultState():
 def testCopyState():
     gs = GameState()
     gs.turn = 'B'
-    gs.halfMoves = 10
+    gs.halfMoves = [((0,1), (0,3))]
     gs.score = 100
     gs.setCannotCastle('W', 'K')
     gs.setCheck('W', True)
@@ -18,7 +18,7 @@ def testCopyState():
 
     gsCopy = gs.copy()
     assert gsCopy.turn == 'B'
-    assert gsCopy.halfMoves == 10
+    assert gsCopy.halfMoves == [((0,1), (0,3))]
     assert gsCopy.score == 100  
     assert gsCopy.getCanCastle('W', 'K') == False
     assert gsCopy.getCanCastle('W', 'Q') == True
@@ -30,10 +30,8 @@ def testTurn():
     assert gs.turn == 'W'
     gs.nextTurn()
     assert gs.turn == 'B'
-    assert gs.halfMoves == 1
     gs.nextTurn()
     assert gs.turn == 'W'   
-    assert gs.halfMoves == 2
 
 def testSetCannotCastle():
     gs = GameState()

@@ -1,15 +1,18 @@
-# pychess
+# PyChess
 
-# ToDo
+Simple chess game written in Python not using any engines and without studying any chess algorithms. Naive implementation for fun.
 
+## ToDo List
 Core:
-  - One move ahead bot: makes a move that gives the highest score after his and opponent's moves
-  - N moves ahead bot
+  - Depth N bot
   - GUI: moves list
+  - More unit tests
+  - Review and improve the code
 
-Postponned:
-  - Promotion options
+Postponed:
+  - Ability to play for black
+  - Promotion options (currently Queen is the only option)
   - En passant move
-  - Fifty-move rule: draw by 50 moves without captures and pawn moves
   - Threefold repetition: draw if the same position occurs three times during the game
+  - Fifty-move rule: draw by 50 moves without captures and pawn moves
   

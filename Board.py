@@ -500,6 +500,7 @@ class Board:
             self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
             self.board[fromCell[0]][fromCell[1]] = None
         
+        self.gameState.halfMoves.append((fromCell, toCell))
         self.promotePawns()
         self.gameState.nextTurn()
         self.updateGameState()

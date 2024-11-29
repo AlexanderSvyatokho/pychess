@@ -57,13 +57,25 @@ class BoardWidget(QtWidgets.QWidget):
         whiteColorSelected = QColor(243, 234, 122)
         inCheckColor = QColor(255, 0, 0, 100)
         painter.setPen(Qt.GlobalColor.transparent)
-        
+        lastHalfMove = self.board.gameState.halfMoves[-1] if len(self.board.gameState.halfMoves) > 0 else None
+
         for y in range(0, 8):
             for x in range(0, 8):
-                if (x + y) % 2 == 0:
-                    painter.setBrush(whiteColor if self.selectedCell != (x, 7 - y) else whiteColorSelected)
+                highlight = False
+
+                # Highlight the selected cell and cells that are part of the last move
+                if(self.selectedCell == (x, 7 - y)):
+                    highlight = True
                 else:
-                    painter.setBrush(blackColor if self.selectedCell != (x, 7 - y) else blackColorSelected)
+                    if lastHalfMove:
+                        highlight = lastHalfMove[0] == (x, 7 - y)
+                        if len(lastHalfMove) > 1:
+                            highlight = highlight or lastHalfMove[1] == (x, 7 - y)
+
+                if (x + y) % 2 == 0:
+                    painter.setBrush(whiteColor if not highlight else whiteColorSelected)
+                else:
+                    painter.setBrush(blackColor if not highlight else blackColorSelected)
                 rectangle = QRect(startX + x * CELL_SIZE, startY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 painter.drawRect(rectangle)
                 if self.board.getPiece(x, 7 - y) == (self.board.getTurn() + 'K') and self.board.isCurrentPlayerInCheck():
