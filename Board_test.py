@@ -231,42 +231,42 @@ def testLegalTrap():
 
 def testScoreUpdates():
     b = Board()
-    assert b.gameState.score == 0
+    assert b.gameState.materialScore == 0
     assert b.makeMove(toCell('e2'), toCell('e4'))
-    assert b.gameState.score == 0
+    assert b.gameState.materialScore == 0
     assert b.makeMove(toCell('d7'), toCell('d5'))
-    assert b.gameState.score == 0
+    assert b.gameState.materialScore == 0
     assert b.makeMove(toCell('e4'), toCell('d5'))
-    assert b.gameState.score == 1
+    assert b.gameState.materialScore == 1
     assert b.makeMove(toCell('b8'), toCell('c6'))
-    assert b.gameState.score == 1
+    assert b.gameState.materialScore == 1
     assert b.makeMove(toCell('d5'), toCell('c6'))
-    assert b.gameState.score == 4
+    assert b.gameState.materialScore == 4
     assert b.makeMove(toCell('e7'), toCell('e5'))
-    assert b.gameState.score == 4
+    assert b.gameState.materialScore == 4
     assert b.makeMove(toCell('c6'), toCell('b7'))
-    assert b.gameState.score == 5
+    assert b.gameState.materialScore == 5
     assert b.makeMove(toCell('e5'), toCell('e4'))
-    assert b.gameState.score == 5
+    assert b.gameState.materialScore == 5
     assert b.makeMove(toCell('b7'), toCell('a8'))
-    assert b.gameState.score == 18 # 5 + 9 for Q + 5 for taken rook - 1 for promoted pawn
+    assert b.gameState.materialScore == 18 # 5 + 9 for Q + 5 for taken rook - 1 for promoted pawn
     assert b.makeMove(toCell('d8'), toCell('d5'))
-    assert b.gameState.score == 18 
+    assert b.gameState.materialScore == 18 
     assert b.makeMove(toCell('g1'), toCell('f3'))
-    assert b.gameState.score == 18 
+    assert b.gameState.materialScore == 18 
     assert b.makeMove(toCell('e4'), toCell('f3'))
-    assert b.gameState.score == 15
+    assert b.gameState.materialScore == 15
     assert b.makeMove(toCell('b1'), toCell('c3'))
-    assert b.gameState.score == 15
+    assert b.gameState.materialScore == 15
     assert b.makeMove(toCell('d5'), toCell('a8'))
-    assert b.gameState.score == 6 # 15 - 9 for taken queen
+    assert b.gameState.materialScore == 6 # 15 - 9 for taken queen
     assert b.makeMove(toCell('d1'), toCell('f3'))
-    assert b.gameState.score == 7
+    assert b.gameState.materialScore == 7
     assert b.makeMove(toCell('a8'), toCell('d5'))
-    assert b.gameState.score == 7
+    assert b.gameState.materialScore == 7
     assert b.makeMove(toCell('f1'), toCell('c4'))
-    assert b.gameState.score == 7
+    assert b.gameState.materialScore == 7
     assert b.makeMove(toCell('d5'), toCell('d8'))
-    assert b.gameState.score == 7
+    assert b.gameState.materialScore == 7
     assert b.makeMove(toCell('f3'), toCell('f7'))
-    assert b.gameState.score == 1000 
+    assert b.gameState.materialScore == 1000 

@@ -7,8 +7,9 @@ class GameState:
     def setToDefault(self):
         self.turn = 'W'
         self.halfMoves = []
-        self.score = 0
-        self.castleState = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
+        self.materialScore = 0
+        self.canCastle = {'W': {'K': True, 'Q': True}, 'B': {'K': True, 'Q': True}}
+        self.castled = {'W': False, 'B': False}
         self.gameState = { 
             'draw': { 'draw': False, 'reason': '' },
             'check': { 'check': False, 'who': '' },
@@ -19,23 +20,32 @@ class GameState:
         newGameState = GameState()
         newGameState.turn = self.turn
         newGameState.halfMoves = copy.deepcopy(self.halfMoves)
-        newGameState.score = self.score
-        newGameState.castleState = copy.deepcopy(self.castleState)
+        newGameState.materialScore = self.materialScore
+        newGameState.canCastle = copy.deepcopy(self.canCastle)
+        newGameState.castled = copy.deepcopy(self.castled)
         newGameState.gameState = copy.deepcopy(self.gameState)
         return newGameState
     
     def nextTurn(self):
         self.turn = 'W' if self.turn == 'B' else 'B'
 
-    def getCanCastle(self, color: str, side: str):
-        return self.castleState[color][side]
+    def getCanCastle(self, color: str, side: str = 'KQ'):
+        if(side == 'KQ'):
+            return self.canCastle[color]['K'] or self.canCastle[color]['Q']
+        return self.canCastle[color][side]
     
     def setCannotCastle(self, color: str, side: str = 'KQ'):
         if(side == 'K' or side == 'Q'):
-            self.castleState[color][side] = False
+            self.canCastle[color][side] = False
         elif(side == 'KQ'):
-            self.castleState[color]['K'] = False
-            self.castleState[color]['Q'] = False
+            self.canCastle[color]['K'] = False
+            self.canCastle[color]['Q'] = False
+
+    def getCasted(self, color: str):
+        return self.castled[color]
+    
+    def setCastled(self, color: str):
+        self.castled[color] = True
 
     def isCurrentPlayerInCheck(self):
         return self.gameState['check'] == {'check': True, 'who': self.turn}

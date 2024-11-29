@@ -11,7 +11,7 @@ def testCopyState():
     gs = GameState()
     gs.turn = 'B'
     gs.halfMoves = [((0,1), (0,3))]
-    gs.score = 100
+    gs.materialScore = 100
     gs.setCannotCastle('W', 'K')
     gs.setCheck('W', True)
     gs.setDraw(DrawType.STALEMATE)
@@ -19,7 +19,7 @@ def testCopyState():
     gsCopy = gs.copy()
     assert gsCopy.turn == 'B'
     assert gsCopy.halfMoves == [((0,1), (0,3))]
-    assert gsCopy.score == 100  
+    assert gsCopy.materialScore == 100  
     assert gsCopy.getCanCastle('W', 'K') == False
     assert gsCopy.getCanCastle('W', 'Q') == True
     assert gsCopy.getCanCastle('B', 'K') == True
@@ -39,20 +39,39 @@ def testSetCannotCastle():
     gs.setCannotCastle('W', 'K')
     assert gs.getCanCastle('W', 'K') == False
     assert gs.getCanCastle('W', 'Q') == True
+    assert gs.getCanCastle('W') == True
     assert gs.getCanCastle('B', 'K') == True
     assert gs.getCanCastle('B', 'Q') == True
+    assert gs.getCanCastle('B') == True
 
     gs.setCannotCastle('W', 'Q')
     assert gs.getCanCastle('W', 'K') == False
     assert gs.getCanCastle('W', 'Q') == False
+    assert gs.getCanCastle('W') == False
     assert gs.getCanCastle('B', 'K') == True
     assert gs.getCanCastle('B', 'Q') == True
+    assert gs.getCanCastle('B') == True
 
     gs.setCannotCastle('B', 'KQ')
     assert gs.getCanCastle('W', 'K') == False
     assert gs.getCanCastle('W', 'Q') == False
+    assert gs.getCanCastle('W') == False
     assert gs.getCanCastle('B', 'K') == False
     assert gs.getCanCastle('B', 'Q') == False
+    assert gs.getCanCastle('B') == False
+
+def testSetCastled():
+    gs = GameState()
+    assert gs.getCasted('W') == False
+    assert gs.getCasted('B') == False
+
+    gs.setCastled('W')
+    assert gs.getCasted('W') == True
+    assert gs.getCasted('B') == False
+
+    gs.setCastled('B')
+    assert gs.getCasted('W') == True
+    assert gs.getCasted('B') == True
 
 def testSetCheck():
     gs = GameState()

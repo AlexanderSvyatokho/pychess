@@ -511,7 +511,7 @@ class Board:
         self.updateCheckState()
         self.updateCheckmateState()
         self.updateDrawState()
-        self.updateGameScore()
+        self.updateMaterialScore()
 
     def updateCheckState(self):
         self.gameState.setCheck(self.getTurn(), self.isPlayerInCheck(self.getTurn()))
@@ -560,16 +560,16 @@ class Board:
         return  self.gameState.isDraw()
     
     # Precondition: checkmate and check states are updated
-    def updateGameScore(self):
+    def updateMaterialScore(self):
         if self.isCurrentPlayerInCheckmate():
             if self.getTurn() == 'B':
-                self.gameState.score = 1000
+                self.gameState.materialScore = 1000
             else:
-                self.gameState.score = -1000
+                self.gameState.materialScore = -1000
             return
         
         if self.isDraw():
-            self.gameState.score = 0
+            self.gameState.materialScore = 0
             return
 
         # Calculate the score based on the pieces left
@@ -588,7 +588,7 @@ class Board:
                     elif piece[1] == 'Q':
                         score += (9 if piece[0] == 'W' else -9)
 
-        self.gameState.score = score
+        self.gameState.materialScore = score
 
     ############################################################
     # Utility methods
@@ -596,7 +596,7 @@ class Board:
     def printState(self):
         print('Board state:')
         print(f'Turn: {self.getTurn()}')
-        print(f'Can Castle: {self.gameState.castleState}')
+        print(f'Can Castle: {self.gameState.canCastle}')
 
     def __str__(self):
         str = ''

@@ -19,7 +19,7 @@ class BotGreedy(BotBase):
             for move in moves:
                 boardCopy = board.copy()
                 boardCopy.makeMove(move[0], move[1])
-                score = boardCopy.gameState.score
+                score = boardCopy.gameState.materialScore
                 if myColor == 'B':
                     score = -score
                 if score > bestScore:

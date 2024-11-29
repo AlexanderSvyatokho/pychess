@@ -80,7 +80,7 @@ class PyChess(QtWidgets.QWidget):
         self.updateUIAfterMove()
 
     def updateUIAfterMove(self):
-        self.statusBar.showMessage(f'Move: {len(self.board.gameState.halfMoves) // 2 + 1} | Score: {self.board.gameState.score}')
+        self.statusBar.showMessage(f'Move: {len(self.board.gameState.halfMoves) // 2 + 1} | Score: {self.board.gameState.materialScore}')
         self.gameControl.updateGamesMoves(self.board.gameState)
 
 if __name__ == "__main__":
