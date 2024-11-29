@@ -23,16 +23,24 @@ class BotDepth1(BotBase):
             worstOpponentScore = 1000000
             for move in moves:
                 boardCopy = board.copy()
-                boardCopy.makeMove(move[0], move[1])
+                boardCopy.makeMove(move[0], move[1], False)
                 
                 bestOpponentScore = -1000000
                 opponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
                 random.shuffle(opponentMoves)
                 for opponentMove in opponentMoves:
                     boardCopy2 = boardCopy.copy()
-                    boardCopy2.makeMove(opponentMove[0], opponentMove[1])
+                    boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
                     movesAnalyzed += 1
                     score = boardCopy2.gameState.materialScore
+                    if myColor == 'W':
+                        score = -score
+                    if score > bestOpponentScore:
+                        bestOpponentScore = score
+                
+                # If the opponent has no valid moves (checkmate or draw) use the current score
+                if len(opponentMoves) == 0:
+                    score = boardCopy.gameState.materialScore
                     if myColor == 'W':
                         score = -score
                     if score > bestOpponentScore:

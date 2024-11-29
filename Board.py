@@ -10,6 +10,9 @@ class Board:
         self.gameState = GameState()
         self.setToDefault()
 
+    def clearBoard(self):
+        self.board = [[None for _ in range(8)] for _ in range(8)]
+
     def copy(self):
         newBoard = Board()
         newBoard.board = [col.copy() for col in self.board]
@@ -457,7 +460,8 @@ class Board:
 
     # Attempts to make a move for the piece at fromCell to toCell. If the move is invalid, does nothing
     # and returns False. Changes the turn if the move is valid and returns True.
-    def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
+    # If validateMove is False, the move is made without checking if it is valid (faster performance).
+    def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int], validateMove: bool = True):
         piece = self.getPiece(fromCell[0], fromCell[1]) 
         pieceColor = piece[0]
 
@@ -469,10 +473,11 @@ class Board:
             logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.getTurn()}. Piece: {piece}')
             return False
         
-        validMoves = self.getMovesForPiece(fromCell[0], fromCell[1])
-        if toCell not in validMoves:
-            logging.warning(f'Board: makeMove: Invalid move for a piece at {fromCell[0], fromCell[1]}')
-            return False
+        if (validateMove):
+            validMoves = self.getMovesForPiece(fromCell[0], fromCell[1])
+            if toCell not in validMoves:
+                logging.warning(f'Board: makeMove: Invalid move for a piece at {fromCell[0], fromCell[1]}')
+                return False
         
         if piece[1] == 'K' and abs(fromCell[0] - toCell[0]) >= 2:
             # Castling
@@ -508,26 +513,26 @@ class Board:
         return True
     
     def updateGameState(self):
-        self.updateCheckState()
-        self.updateCheckmateState()
+        self.updateCheckCheckmateStalemateState()
         self.updateDrawState()
         self.updateMaterialScore()
 
-    def updateCheckState(self):
-        self.gameState.setCheck(self.getTurn(), self.isPlayerInCheck(self.getTurn()))
+    def updateCheckCheckmateStalemateState(self):
+        isInCheck = self.isPlayerInCheck(self.getTurn())
+        hasValidMoves = self.hasValidMoves(self.getTurn())
 
-    def updateCheckmateState(self):
-        if self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn()):
+        self.gameState.setCheck(self.getTurn(), isInCheck)
+
+        if isInCheck and not hasValidMoves:
             self.gameState.setCheckmate(self.getTurn())
+            return
+
+        if not isInCheck and not hasValidMoves:
+            self.gameState.setDraw(DrawType.STALEMATE)
 
     def updateDrawState(self):
-        if self.checkStalemate():
-            self.gameState.setDraw(DrawType.STALEMATE)
-        elif self.checkDrawByInsufficientMaterial():
+        if self.checkDrawByInsufficientMaterial():
             self.gameState.setDraw(DrawType.INSUFFICIENT_MATERIAL)
-
-    def checkStalemate(self):
-        return not self.isPlayerInCheck(self.getTurn()) and not self.hasValidMoves(self.getTurn())
     
     def checkDrawByInsufficientMaterial(self):
         # Draw by insufficient material is if there is no way to end the game in checkmate:
