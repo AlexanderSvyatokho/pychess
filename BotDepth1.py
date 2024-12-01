@@ -5,6 +5,9 @@ from BotBase import BotBase
 # Makes a move that gives the best score taken into account best possible
 # response of the opponent (1 depth)
 class BotDepth1(BotBase):
+    
+    recordedTimes = []
+
     def __init__(self):
         super().__init__()
 
@@ -28,6 +31,9 @@ class BotDepth1(BotBase):
                 bestOpponentScore = -1000000
                 opponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
                 random.shuffle(opponentMoves)
+
+                opponentMoves = self.selectSignificantMoves(boardCopy, opponentMoves)
+
                 for opponentMove in opponentMoves:
                     boardCopy2 = boardCopy.copy()
                     boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
@@ -52,5 +58,8 @@ class BotDepth1(BotBase):
   
             board.makeMove(bestMove[0], bestMove[1])
 
-        logging.info(f'Bot stats:: time taken: {round(time.time() - start, 3)}, moves analyzed: {movesAnalyzed}')
+        timeTaken = time.time() - start  
+        self.recordedTimes.append(timeTaken)
+        avgTime = sum(self.recordedTimes) / len(self.recordedTimes)
+        logging.info(f'Bot stats:: time taken: {round(timeTaken, 3)}, moves analyzed: {movesAnalyzed}, avg time: {round(avgTime, 3)}')
         
