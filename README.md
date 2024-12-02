@@ -4,8 +4,8 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
-  - Sort significant moves by capture
-  - Priritize castling
+  - Fix Depth N bot
+  - Prioritize castling
   - Review Depth N implementation to make sure not bugs are there
   - More unit tests
   - Review and improve the code

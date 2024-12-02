@@ -21,10 +21,21 @@ class BotDepthN(BotBase):
         self.recordedTimes.append(timeTaken)
         avgTime = sum(self.recordedTimes) / len(self.recordedTimes)
         logging.info(f'Bot stats:: time taken: {round(timeTaken, 3)}, avg time: {round(avgTime, 3)}')
+
+    def maxMovesForDepth(self, depth: int):
+        if depth == 0:
+            return 15
+        elif depth == 1:
+            return 10
+        elif depth == 2:
+            return 5
+        else:
+            return 3
         
     def makeMoveRecursive(self, board: Board, depth: int):
         #logging.info(f'makeIteration: depth={depth}')
         myColor = board.getTurn()
+        maxMovesForDepth = self.maxMovesForDepth(depth)
 
         if depth >= self.maxDepth:
             return -board.gameState.materialScore if myColor == 'W' else board.gameState.materialScore
@@ -34,9 +45,11 @@ class BotDepthN(BotBase):
         moves = self.selectSignificantMoves(board, validMoves)
         
         # If we are at the root node and there are less than 10 significant moves, consider more moves
-        maxMovesForDepth0 = 15
-        if (depth == 0 and len(moves) < maxMovesForDepth0):
-            moves = validMoves[:maxMovesForDepth0]
+        minMovesForDepth0 = 15
+        if (depth == 0 and len(moves) < minMovesForDepth0):
+            moves = validMoves[:minMovesForDepth0]
+
+        moves = moves[:maxMovesForDepth]
 
         if(len(moves) > 0):
             bestMove = moves[0]
@@ -50,6 +63,7 @@ class BotDepthN(BotBase):
                 opponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
                 random.shuffle(opponentMoves)
                 opponentMoves = self.selectSignificantMoves(boardCopy, opponentMoves)
+                opponentMoves = opponentMoves[:maxMovesForDepth]
 
                 for opponentMove in opponentMoves:
                     boardCopy2 = boardCopy.copy()
