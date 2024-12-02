@@ -10,4 +10,5 @@ class OpponentType(Enum):
     HUMAN = 'Human vs Human'
     BOT_RANDOM = 'Bot [1]: Random'
     BOT_GREEDY = 'Bot [2]: Greedy Silly'
-    BOT_DEPTH1= 'Bot [3]: Depth One'
+    BOT_DEPTH1= 'Bot [3]: Depth 1'
+    BOT_DEPTH2= 'Bot [4]: Depth 2'

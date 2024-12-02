@@ -13,6 +13,7 @@ from BotThread import BotThread
 from BotRandom import BotRandom
 from BotGreedy import BotGreedy
 from BotDepth1 import BotDepth1
+from BotDepthN import BotDepthN
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -59,6 +60,8 @@ class PyChess(QtWidgets.QWidget):
                 self.bot = BotGreedy()
             elif opponent == OpponentType.BOT_DEPTH1.value:
                 self.bot = BotDepth1()
+            elif opponent == OpponentType.BOT_DEPTH2.value:
+                self.bot = BotDepthN(2)
             else:
                 self.bot = None
             self.boardWidget.update()
