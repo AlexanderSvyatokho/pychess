@@ -20,6 +20,7 @@ class PyChess(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.board = Board()
+        self.board.clear()
         self.bot = None
         self.boardWidget = BoardWidget(self.board)
         self.gameControl = GameControlWidget()
@@ -65,7 +66,7 @@ class PyChess(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def onMoveMadeByPlayer(self):
-        if self.bot:
+        if self.bot and self.board.gameState.isGameOngoing():
             # Run the bot in a separate thread to avoid blocking the UI
             self.botThread = BotThread(self.bot, self.board)
             self.botThread.finished.connect(self.onMoveMadeByBot)

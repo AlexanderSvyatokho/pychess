@@ -5,7 +5,7 @@ def testMateInOneAvoidDraw():
 
     for _ in range(10):
         b = Board()
-        b.clearBoard()
+        b.clear()
 
         b.board[0][7] = 'BK'
         b.board[3][1] = 'WK'

@@ -10,7 +10,7 @@ class Board:
         self.gameState = GameState()
         self.setToDefault()
 
-    def clearBoard(self):
+    def clear(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
 
     def copy(self):
@@ -462,12 +462,17 @@ class Board:
     # and returns False. Changes the turn if the move is valid and returns True.
     # If validateMove is False, the move is made without checking if it is valid (faster performance).
     def makeMove(self, fromCell: tuple[int, int], toCell: tuple[int, int], validateMove: bool = True):
+        if (self.gameState.isGameOngoing() == False):
+            logging.warning('Board: makeMove: Game is not ongoing')
+            return False
+
         piece = self.getPiece(fromCell[0], fromCell[1]) 
-        pieceColor = piece[0]
 
         if (not piece):
             logging.warning(f'Board: makeMove: No piece at {fromCell[0], fromCell[1]}')
             return False
+        
+        pieceColor = piece[0]
         
         if (not piece or piece[0] != self.getTurn()):
             logging.warning(f'Board: makeMove: Attempted to move opponent\'s piece {fromCell[0], fromCell[1]}. Turn: {self.getTurn()}. Piece: {piece}')

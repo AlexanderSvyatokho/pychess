@@ -3,7 +3,7 @@ from BotBase import BotBase
 
 def testSelectSignificantMoves():
         b = Board()
-        b.clearBoard()
+        b.clear()
 
         b.board[6][4] = 'BK'
         b.board[1][1] = 'BR'
