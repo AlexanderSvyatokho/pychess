@@ -22,6 +22,7 @@ class GameControlWidget(QtWidgets.QWidget):
         self.cmbOpponent.addItem(OpponentType.BOT_GREEDY.value)
         self.cmbOpponent.addItem(OpponentType.BOT_DEPTH1.value)
         self.cmbOpponent.addItem(OpponentType.BOT_DEPTH2.value)
+        self.cmbOpponent.addItem(OpponentType.BOT_DEPTH3.value)
         self.cmbOpponent.setCurrentIndex(self.cmbOpponent.count() - 1)
       
         self.vboxNewGame = QtWidgets.QVBoxLayout()
@@ -44,7 +45,6 @@ class GameControlWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.gbNewGame)
         self.layout.addWidget(self.gbGameMoves)
-        self.layout.addStretch(1)
 
     @QtCore.Slot()
     def btnNewGameClicked(self):

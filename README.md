@@ -4,8 +4,9 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
-  - Depth N bot
-  - GUI: moves list
+  - Sort significant moves by capture
+  - Priritize castling
+  - Review Depth N implementation to make sure not bugs are there
   - More unit tests
   - Review and improve the code
 

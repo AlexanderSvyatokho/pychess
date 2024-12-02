@@ -584,20 +584,13 @@ class Board:
             return
 
         # Calculate the score based on the pieces left
-        # 1 point for pawn, 3 points for knight or bishop, 5 points for rook, 9 points for queen
         score = 0
         for y in range(0, 8):
             for x in range(0, 8):
                 piece = self.board[x][y]
-                if piece:
-                    if piece[1] == 'P':
-                        score += (1 if piece[0] == 'W' else -1)
-                    elif piece[1] == 'N' or piece[1] == 'B':
-                        score += (3 if piece[0] == 'W' else -3)
-                    elif piece[1] == 'R':
-                        score += (5 if piece[0] == 'W' else -5)
-                    elif piece[1] == 'Q':
-                        score += (9 if piece[0] == 'W' else -9)
+                pieceValue = PIECE_VALUES.get(piece)
+                if pieceValue:
+                    score += (pieceValue if piece[0] == 'W' else -pieceValue)
 
         self.gameState.materialScore = score
 

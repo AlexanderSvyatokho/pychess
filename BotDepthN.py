@@ -15,28 +15,28 @@ class BotDepthN(BotBase):
     def makeMove(self, board: Board):
         start = time.time()
 
-        self.makeIteration(board, 0)
+        self.makeMoveRecursive(board, 0)
 
         timeTaken = time.time() - start  
         self.recordedTimes.append(timeTaken)
         avgTime = sum(self.recordedTimes) / len(self.recordedTimes)
         logging.info(f'Bot stats:: time taken: {round(timeTaken, 3)}, avg time: {round(avgTime, 3)}')
         
-    def makeIteration(self, board: Board, depth: int):
-        logging.info(f'makeIteration: depth={depth}')
+    def makeMoveRecursive(self, board: Board, depth: int):
+        #logging.info(f'makeIteration: depth={depth}')
         myColor = board.getTurn()
 
         if depth >= self.maxDepth:
-            if myColor == 'W':
-                return -board.gameState.materialScore
-            return board.gameState.materialScore
+            return -board.gameState.materialScore if myColor == 'W' else board.gameState.materialScore
        
         validMoves = board.getValidMoves(myColor)
         random.shuffle(validMoves) # Randomize moves to avoid always picking the first one
         moves = self.selectSignificantMoves(board, validMoves)
         
-        if (depth == 0 and len(moves) < 10):
-            moves.extend(validMoves[:10 - len(moves)])
+        # If we are at the root node and there are less than 10 significant moves, consider more moves
+        maxMovesForDepth0 = 15
+        if (depth == 0 and len(moves) < maxMovesForDepth0):
+            moves = validMoves[:maxMovesForDepth0]
 
         if(len(moves) > 0):
             bestMove = moves[0]
@@ -48,14 +48,14 @@ class BotDepthN(BotBase):
                 
                 bestOpponentScore = -1000000
                 opponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
-                opponentMoves = self.selectSignificantMoves(boardCopy, opponentMoves)
                 random.shuffle(opponentMoves)
+                opponentMoves = self.selectSignificantMoves(boardCopy, opponentMoves)
 
                 for opponentMove in opponentMoves:
                     boardCopy2 = boardCopy.copy()
                     boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
                     #score = boardCopy2.gameState.materialScore
-                    score = self.makeIteration(boardCopy2, depth + 1)
+                    score = self.makeMoveRecursive(boardCopy2, depth + 1)
                     
                     if score and score > bestOpponentScore:
                         bestOpponentScore = score
@@ -73,10 +73,8 @@ class BotDepthN(BotBase):
                     bestMove = move
 
             if depth == 0:
-                board.makeMove(bestMove[0], bestMove[1])
+                board.makeMove(bestMove[0], bestMove[1], False)
             
             return worstOpponentScore
         else:
-            if myColor == 'W':
-                return -board.gameState.materialScore
-            return board.gameState.materialScore
+            return -board.gameState.materialScore if myColor == 'W' else board.gameState.materialScore

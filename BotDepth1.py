@@ -19,6 +19,7 @@ class BotDepth1(BotBase):
         myColor = board.getTurn()
         moves = board.getValidMoves(myColor)
         random.shuffle(moves) # Randomize moves to avoid always picking the first one
+        moves = self.sortMovesBySignificance(board, moves)
 
         if(len(moves) > 0):
             bestMove = moves[0]
@@ -56,7 +57,7 @@ class BotDepth1(BotBase):
                     worstOpponentScore = bestOpponentScore
                     bestMove = move
   
-            board.makeMove(bestMove[0], bestMove[1])
+            board.makeMove(bestMove[0], bestMove[1], False)
 
         timeTaken = time.time() - start  
         self.recordedTimes.append(timeTaken)

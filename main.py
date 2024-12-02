@@ -62,6 +62,8 @@ class PyChess(QtWidgets.QWidget):
                 self.bot = BotDepth1()
             elif opponent == OpponentType.BOT_DEPTH2.value:
                 self.bot = BotDepthN(2)
+            elif opponent == OpponentType.BOT_DEPTH3.value:
+                self.bot = BotDepthN(3)
             else:
                 self.bot = None
             self.boardWidget.update()
