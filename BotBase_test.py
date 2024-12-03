@@ -39,3 +39,28 @@ def testSelectSignificantMoves():
         ]
 
         assert set(significantMoves) == set(expectedMoves)
+
+
+def testSelectSignificantMoves():
+    b = Board()
+    b.clear()
+
+    str = '''[]BQ[][][][]BNBK
+             [][][][][][]BPBP
+             [][][][][][][][]
+             [][][][][]BR[][]
+             [][][][][][][][]
+             [][][][][][][][]
+             BN[][][][][][][]
+             WKWQ[][][][][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    moves = b.getValidMoves('W')
+
+    bot = BotBase()
+    significantMoves = bot.selectSignificantMoves(b, moves)
+
+    assert len(significantMoves) == 4
+    assert significantMoves[0] == ((1, 0), (1, 7)) # WQ captures BQ
+    assert significantMoves[1] == ((1, 0), (5, 4)) # WQ captures BR
+    assert {significantMoves[2], significantMoves[3]} == {((0, 0), (0, 1)), ((1, 0), (0, 1))} # WK and WQ captures BN

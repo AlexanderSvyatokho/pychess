@@ -35,16 +35,16 @@ class Board:
         self.gameState.setToDefault()
 
         # Set up the board with pieces
-        self.board = [[None for _ in range(8)] for _ in range(8)]
-        pieces = ['R', None, None, 'Q', 'K', None, None, 'R']
-        for i in range(8):
-            self.board[i][0] = 'W' + pieces[i] if pieces[i] else None
-            self.board[i][1] = None
-            self.board[i][6] = None
-            self.board[i][7] = 'B' + pieces[i] if pieces[i] else None
-
-        self.board[1][2] = 'WP'
-        self.board[6][6] = 'BP'
+        str = '''[]BQ[][][][]BNBK
+                 [][][][][][]BPBP
+                 [][][][][][][][]
+                 [][][][][]BR[][]
+                 [][][][][][][][]
+                 [][][][][][][][]
+                 BN[][][][][][][]
+                 WKWQ[][][][][][]'''.replace(' ','')
+        
+        self.setBoardFromString(str) 
 
     def reset(self):
         self.setToDefault()
