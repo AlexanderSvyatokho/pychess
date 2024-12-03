@@ -270,3 +270,18 @@ def testScoreUpdates():
     assert b.gameState.materialScore == 7
     assert b.makeMove(toCell('f3'), toCell('f7'))
     assert b.gameState.materialScore == 1000 
+
+def testSetBoardFromString():
+    str = '''WQ[][][][][][]BQ
+             WK[][][][][][][]
+             [][][][][][]WN[]
+             [][][][]BB[][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             WB[][][][]BK[][]
+             []BR[][][][][]BR'''.replace(' ','')
+    
+    b = Board()
+    b.setBoardFromString(str)
+    assert b.getBoardAsString().strip() == str
+    assert b.getPiece(*toCell('f2')) == 'BK'

@@ -4,6 +4,7 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
+  - Add multi threading to Depth 1?
   - Fix Depth N bot
   - Prioritize castling
   - Review Depth N implementation to make sure not bugs are there

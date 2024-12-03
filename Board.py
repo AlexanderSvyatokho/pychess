@@ -602,7 +602,7 @@ class Board:
         print(f'Turn: {self.getTurn()}')
         print(f'Can Castle: {self.gameState.canCastle}')
 
-    def __str__(self):
+    def getBoardAsString(self):
         str = ''
         for y in range(0, 8):
             for x in range(0, 8):
@@ -610,3 +610,14 @@ class Board:
                 str += pc if pc else '[]'
             str += '\n'
         return str
+    
+    def setBoardFromString(self, boardStr):
+        rows = boardStr.split('\n')
+        for y in range(0, 8):
+            for x in range(0, 8):
+                self.board[x][7 - y] = rows[y][x * 2:x * 2 + 2]
+                if self.board[x][7 - y] == '[]':
+                    self.board[x][7 - y] = None
+     
+    def __str__(self):
+        return self.getBoardAsString()

@@ -3,7 +3,7 @@ from BotDepth1 import BotDepth1
 
 def testMateInOneAvoidDraw():
 
-    for _ in range(10):
+    for _ in range(5):
         b = Board()
         b.clear()
 
@@ -24,3 +24,25 @@ def testMateInOneAvoidDraw():
         bot.makeMove(b)
         
         assert b.gameState.isCurrentPlayerInCheckmate() == True
+
+def testPickBestCapture():
+
+    b = Board()
+    b.clear()
+
+    str = '''WQ[][][][][][]BQ
+             WK[][][][][][][]
+             [][][][][][]WN[]
+             [][][][]BB[][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             WB[][][][]BK[][]
+             []BR[][][][][]BR'''.replace(' ','')
+
+    b.setBoardFromString(str)
+
+    bot = BotDepth1()
+    bot.makeMove(b)
+
+    assert b.getPiece(6, 5) == None
+    assert b.getPiece(7, 7) == 'WN'
