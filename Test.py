@@ -3,25 +3,28 @@ from BotBase import BotBase
 from BotDepth1 import BotDepth1
 from BotDepthN import BotDepthN
 
-b = Board()
-b.clear()
+from TestUtils import * 
 
-str = '''[][][][][][][][]
-        []WK[][][][][][]
-        [][][][][][][][]
-        [][][][][][][][]
-        [][][][]WN[][][]
-        [][][][][][]WQ[]
-        [][][][][][][][]
-        [][][][][]BK[][]'''.replace(' ','')
+# b = Board()
+# b.clear()
 
-b.setBoardFromString(str)
+# str = '''[][][][][][][][]
+#         []WK[][][][][][]
+#         [][][][][][][][]
+#         [][][][][][][][]
+#         [][][][]WN[][][]
+#         [][][][][][]WQ[]
+#         [][][][][][][][]
+#         [][][][][]BK[][]'''.replace(' ','')
 
-print(b.getBoardAsString())
+# b.setBoardFromString(str)
 
-bot = BotDepthN(1)
-bot.makeMove(b)
+# print(b.getBoardAsString())
 
-print(b.getBoardAsString())
+# bot = BotDepthN(1)
+# bot.makeMove(b)
 
-print(b.gameState.isCurrentPlayerInCheckmate())
+# print(b.getBoardAsString())
+
+# print(b.gameState.isCurrentPlayerInCheckmate())
+
