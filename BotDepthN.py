@@ -40,14 +40,17 @@ class BotDepthN(BotBase):
         if depth >= self.maxDepth:
             return board.gameState.materialScore
        
-        validMoves = board.getValidMoves(myColor)
-        random.shuffle(validMoves) # Randomize moves to avoid always picking the first one
+        validMoves = []
+        if (board.gameState.isGameOngoing()):
+            validMoves = board.getValidMoves(myColor)
+            random.shuffle(validMoves) # Randomize moves to avoid always picking the first one
+
         moves = self.selectSignificantMoves(board, validMoves)
 
         # print(f'Depth={depth}, significant moves count ={len(moves)}, significant moves ={moves}')
         
         # If we are at the root node and there are few significant moves, consider more moves
-        minMovesForDepth0 = 15
+        minMovesForDepth0 = 60
         if (depth == 0 and len(moves) < minMovesForDepth0):
             for vm in validMoves:
                 if vm not in moves:
@@ -55,7 +58,8 @@ class BotDepthN(BotBase):
                     if len(moves) >= minMovesForDepth0:
                         break
 
-        moves = moves[:maxMovesForDepth]
+        if (depth >= 0 and len(moves) > maxMovesForDepth):
+            moves = moves[:maxMovesForDepth]
 
         # print(f'Depth={depth}, selected moves count ={len(moves)}, selected moves ={moves}')
 
@@ -64,12 +68,17 @@ class BotDepthN(BotBase):
             # From all possible moves, pick the one that gives the worst maximum score for the opponent
             worstOpponentScore = 1000000
             for move in moves:
+                bestResponseOpponentScore = -1000000
+
                 boardCopy = board.copy()
                 boardCopy.makeMove(move[0], move[1], False)
-                
-                bestResponseOpponentScore = -1000000
-                validOpponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
-                random.shuffle(validOpponentMoves)
+
+                validOpponentMoves = []
+
+                if (boardCopy.gameState.isGameOngoing()):
+                    validOpponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
+                    random.shuffle(validOpponentMoves)
+
                 opponentMoves = self.selectSignificantMoves(boardCopy, validOpponentMoves)
                 opponentMoves = opponentMoves[:maxMovesForDepth]
                 
@@ -84,18 +93,6 @@ class BotDepthN(BotBase):
 
                 # print(f'opponentMoves for move {move}: depth={depth}, moves count ={len(opponentMoves)}, opponentMoves ={opponentMoves}')
 
-                for opponentMove in opponentMoves:
-                    boardCopy2 = boardCopy.copy()
-                    boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
-                    score = self.makeMoveRecursive(boardCopy2, depth + 1)
-                    if myColor == 'W':
-                        score = -score
-                    if score > bestResponseOpponentScore:
-                        bestResponseOpponentScore = score
-
-                    if score and score > bestResponseOpponentScore:
-                        bestResponseOpponentScore = score
-                
                 # If the opponent has no valid moves (checkmate or draw) use the current score
                 if len(opponentMoves) == 0:
                     score = boardCopy.gameState.materialScore
@@ -104,17 +101,29 @@ class BotDepthN(BotBase):
                         score = -score
                     if score > bestResponseOpponentScore:
                         bestResponseOpponentScore = score
+                else:
+                    for opponentMove in opponentMoves:
+                        boardCopy2 = boardCopy.copy()
+                        boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
+                        score = self.makeMoveRecursive(boardCopy2, depth + 1)
+                        if myColor == 'W':
+                            score = -score
+                        if score > bestResponseOpponentScore:
+                            bestResponseOpponentScore = score
+
+                        if score and score > bestResponseOpponentScore:
+                            bestResponseOpponentScore = score
 
                 if worstOpponentScore > bestResponseOpponentScore:
                     worstOpponentScore = bestResponseOpponentScore
                     bestMove = move
 
             if depth == 0:
-                #print(f'Making move: {bestMove}')
+                # print(f'Making move: {bestMove}')
                 board.makeMove(bestMove[0], bestMove[1], False)
                 return 
             
-            #print(f'Skipping move!')
+            # print(f'Returning to parent node!')
 
             return -worstOpponentScore if myColor == 'W' else worstOpponentScore
         else:

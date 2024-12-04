@@ -5,26 +5,33 @@ from BotDepthN import BotDepthN
 
 from TestUtils import * 
 
-# b = Board()
-# b.clear()
+b = Board()
+b.clear()
 
-# str = '''[][][][][][][][]
-#         []WK[][][][][][]
-#         [][][][][][][][]
-#         [][][][][][][][]
-#         [][][][]WN[][][]
-#         [][][][][][]WQ[]
-#         [][][][][][][][]
-#         [][][][][]BK[][]'''.replace(' ','')
+str = '''[][][][][][][][]
+         [][][][][][][][]
+         [][][][][][][][]
+         [][][][][][][][]
+         [][][]BK[][][][]
+         [][][][][][][][]
+         [][][][][][]BQ[]
+         [][][]WK[][][][]'''.replace(' ','')
 
-# b.setBoardFromString(str)
+b.setBoardFromString(str)
+b.gameState.turn = 'B'
 
-# print(b.getBoardAsString())
+print(b.getBoardAsString())
 
-# bot = BotDepthN(1)
-# bot.makeMove(b)
+bot = BotDepthN(2)
+bot.makeMove(b)
 
-# print(b.getBoardAsString())
+print(b.getBoardAsString())
 
-# print(b.gameState.isCurrentPlayerInCheckmate())
+b.getValidMoves('W')
 
+print(f'Is in check: {b.gameState.isCurrentPlayerInCheck()}')
+
+b.makeMove(toCell('D1'), toCell('E1'))
+bot.makeMove(b) 
+
+print(b.getBoardAsString())

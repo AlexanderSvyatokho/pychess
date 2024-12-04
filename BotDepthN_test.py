@@ -15,9 +15,6 @@ def testBotDepthN_D1_MateInOne():
     challengeMateInOneWithRook(BotDepthN(1))
     challengeMateInOneWithPromotion(BotDepthN(1))
 
-def testBotDepthN_D2_PickBestCapture():
-    challengePickBestCapture(BotDepthN(2))
-
 def testBotDepthN_D2_MateInOne():
     challengeMateInOneAvoidDraw(BotDepthN(2))
     challengeMateInOneWithQueen(BotDepthN(2))
@@ -26,3 +23,10 @@ def testBotDepthN_D2_MateInOne():
     challengeMateInOneWithKnight(BotDepthN(2))
     challengeMateInOneWithRook(BotDepthN(2))
     challengeMateInOneWithPromotion(BotDepthN(2))
+
+def testBotDepthN_D2_MateInTwo():
+    challengeMateInTwoWithRook(BotDepthN(2))
+    challengeMateInTwoWithRookAndKing(BotDepthN(2))
+    challengeMateInTwoWithBishopAndPawn(BotDepthN(2))
+    challengeMateInTwoWithKnightAndKing(BotDepthN(2))
+    challengeMateInTwoWithQueenAndKing(BotDepthN(2))

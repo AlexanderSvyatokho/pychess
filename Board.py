@@ -20,6 +20,9 @@ class Board:
         return newBoard
 
     def setToDefault(self):
+        # setToDefaultTest()
+        # return
+    
         self.gameState.setToDefault()
         
         # Set up the board with pieces
@@ -35,14 +38,14 @@ class Board:
         self.gameState.setToDefault()
 
         # Set up the board with pieces
-        str = '''[]BQ[][][][]BNBK
-                 [][][][][][]BPBP
+        str = '''[][][][][]BK[][]
+                 [][][][][]BP[]BP
+                 [][][][][]WP[][]
+                 [][][]WK[][][][]
                  [][][][][][][][]
-                 [][][][][]BR[][]
                  [][][][][][][][]
-                 [][][][][][][][]
-                 BN[][][][][][][]
-                 WKWQ[][][][][][]'''.replace(' ','')
+                 BP[][][]WR[][][]
+                 []BR[][][][]WR[]'''.replace(' ','')
         
         self.setBoardFromString(str) 
 
