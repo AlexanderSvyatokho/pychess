@@ -28,11 +28,19 @@ class BotBase:
             if board.getPiece(*move[0])[1] == 'P' and move[1][1] == 7:
                 significantMovesWithScore.append((move, 8))
 
-            # Check
             boardCopy = board.copy()
             boardCopy.makeMove(move[0], move[1], False)
+
+            # Check and checkmate
             if boardCopy.isCurrentPlayerInCheck():
-                significantMovesWithScore.append((move, 3))
+                if boardCopy.isCurrentPlayerInCheckmate():
+                    significantMovesWithScore.append((move, 1000))
+                else:
+                    significantMovesWithScore.append((move, 3))
+
+            # Draw
+            if boardCopy.isDraw():
+                significantMovesWithScore.append((move, 100))
 
             if not removeInsignificant:
                 significantMovesWithScore.append((move, 0))

@@ -324,15 +324,17 @@ class Board:
 
         # Castling
         if pieceColor == 'W':
-            if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
-                moves.append((6, 0))
-            if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
-                moves.append((2, 0))
+            if (x, y) == (4, 0):
+                if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
+                    moves.append((6, 0))
+                if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
+                    moves.append((2, 0))
         else:
-            if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
-                moves.append((6, 7))
-            if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
-                moves.append((2, 7))
+            if (x, y) == (4, 7):
+                if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
+                    moves.append((6, 7))
+                if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
+                    moves.append((2, 7))
 
         return moves
     
@@ -618,6 +620,12 @@ class Board:
                 self.board[x][7 - y] = rows[y][x * 2:x * 2 + 2]
                 if self.board[x][7 - y] == '[]':
                     self.board[x][7 - y] = None
+
+        if self.board[4][0] != 'WK':
+            self.gameState.setCannotCastle('W')
+
+        if self.board[4][7] != 'BK':
+            self.gameState.setCannotCastle('B')
      
     def __str__(self):
         return self.getBoardAsString()

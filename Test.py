@@ -1,22 +1,27 @@
 from Board import Board
 from BotBase import BotBase
+from BotDepth1 import BotDepth1
+from BotDepthN import BotDepthN
 
 b = Board()
 b.clear()
 
-str = '''[]BQ[][][][]BNBK
-         [][][][][][]BPBP
-         [][][][][][][][]
-         [][][][][]BR[][]
-         [][][][][][][][]
-         [][][][][][][][]
-         BN[][][][][][][]
-         WKWQ[][][][][][]'''.replace(' ','')
+str = '''[][][][][][][][]
+        []WK[][][][][][]
+        [][][][][][][][]
+        [][][][][][][][]
+        [][][][]WN[][][]
+        [][][][][][]WQ[]
+        [][][][][][][][]
+        [][][][][]BK[][]'''.replace(' ','')
 
 b.setBoardFromString(str)
-moves = b.getValidMoves('W')
 
-bot = BotBase()
-significantMoves = bot.selectSignificantMoves(b, moves)
+print(b.getBoardAsString())
 
-print(significantMoves)
+bot = BotDepthN(1)
+bot.makeMove(b)
+
+print(b.getBoardAsString())
+
+print(b.gameState.isCurrentPlayerInCheckmate())

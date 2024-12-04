@@ -4,11 +4,10 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
-  - Add multi threading to Depth 1?
-  - Fix Depth N bot
+  - Refactor tests by creating a utilities that return challanges and expected moves
+  - Fix Depth N bot for depth > 1
+  - Add multi threading
   - Prioritize castling
-  - Review Depth N implementation to make sure not bugs are there
-  - More unit tests
   - Review and improve the code
 
 Postponed:

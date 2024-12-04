@@ -29,7 +29,7 @@ class BotDepth1(BotBase):
                 boardCopy = board.copy()
                 boardCopy.makeMove(move[0], move[1], False)
                 
-                bestOpponentScore = -1000000
+                bestResponseOpponentScore = -1000000
                 opponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
                 random.shuffle(opponentMoves)
 
@@ -42,19 +42,19 @@ class BotDepth1(BotBase):
                     score = boardCopy2.gameState.materialScore
                     if myColor == 'W':
                         score = -score
-                    if score > bestOpponentScore:
-                        bestOpponentScore = score
+                    if score > bestResponseOpponentScore:
+                        bestResponseOpponentScore = score
                 
                 # If the opponent has no valid moves (checkmate or draw) use the current score
                 if len(opponentMoves) == 0:
                     score = boardCopy.gameState.materialScore
                     if myColor == 'W':
                         score = -score
-                    if score > bestOpponentScore:
-                        bestOpponentScore = score
+                    if score > bestResponseOpponentScore:
+                        bestResponseOpponentScore = score
 
-                if worstOpponentScore > bestOpponentScore:
-                    worstOpponentScore = bestOpponentScore
+                if worstOpponentScore > bestResponseOpponentScore:
+                    worstOpponentScore = bestResponseOpponentScore
                     bestMove = move
   
             board.makeMove(bestMove[0], bestMove[1], False)
