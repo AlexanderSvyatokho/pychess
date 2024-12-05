@@ -328,15 +328,15 @@ class Board:
         # Castling
         if pieceColor == 'W':
             if (x, y) == (4, 0):
-                if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(5, 0, 'B') and not self.isCellUnderAttack(6, 0, 'B'):
+                if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.areCellsUnderAttack([(4, 0), (5, 0), (6, 0)], 'B'):
                     moves.append((6, 0))
-                if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.isCellUnderAttack(4, 0, 'B') and not self.isCellUnderAttack(3, 0, 'B') and not self.isCellUnderAttack(2, 0, 'B'):
+                if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.areCellsUnderAttack([(4, 0), (3, 0), (2, 0)], 'B'):
                     moves.append((2, 0))
         else:
             if (x, y) == (4, 7):
-                if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(5, 7, 'W') and not self.isCellUnderAttack(6, 7, 'W'):
+                if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.areCellsUnderAttack([(4, 7), (5, 7), (6, 7)], 'W'):
                     moves.append((6, 7))
-                if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.isCellUnderAttack(4, 7, 'W') and not self.isCellUnderAttack(3, 7, 'W') and not self.isCellUnderAttack(2, 7, 'W'):
+                if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.areCellsUnderAttack([(4, 7), (3, 7), (2, 7)], 'W'):
                     moves.append((2, 7))
 
         return moves
@@ -428,12 +428,25 @@ class Board:
                         return True
         return False
     
+    # Returns True if any of the cells in the list are under attack by the attackerColor
+    def areCellsUnderAttack(self, cells: list[tuple[int, int]], attackerColor):
+        for i in range(0, 8):
+            for j in range(0, 8):
+                piece = self.board[i][j]
+                if piece and piece[0] == attackerColor:
+                    moves = self.getCellsAttackedByPiece(i, j)
+                    for c in cells:
+                        if c in moves:
+                            return True
+        return False
+    
     def isPlayerInCheck(self, playerColor):
+        opponentColor = oppositeColor(playerColor)
         for y in range(0, 8):
             for x in range(0, 8):
                 piece = self.board[x][y]
                 if piece and piece[0] == playerColor and piece[1] == 'K':
-                    return self.isCellUnderAttack(x, y, oppositeColor(playerColor))
+                    return self.isCellUnderAttack(x, y, opponentColor)
                 
     def hasValidMoves(self, playerColor):
         for y in range(0, 8):

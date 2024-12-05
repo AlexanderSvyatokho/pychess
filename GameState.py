@@ -1,5 +1,3 @@
-import copy
-
 class GameState:
     def __init__(self):
         self.setToDefault()
@@ -17,13 +15,21 @@ class GameState:
         }
     
     def copy(self):
+        # Not using deepcopy because it's too slow based on the profiling
         newGameState = GameState()
         newGameState.turn = self.turn
-        newGameState.halfMoves = copy.deepcopy(self.halfMoves)
+        newGameState.halfMoves = self.halfMoves.copy()
         newGameState.materialScore = self.materialScore
-        newGameState.canCastle = copy.deepcopy(self.canCastle)
-        newGameState.castled = copy.deepcopy(self.castled)
-        newGameState.gameState = copy.deepcopy(self.gameState)
+        newGameState.canCastle = {
+            'W': self.canCastle['W'].copy(),
+            'B': self.canCastle['B'].copy()
+        }
+        newGameState.castled = self.castled.copy()
+        newGameState.gameState = {
+            'draw': self.gameState['draw'].copy(),
+            'check': self.gameState['check'].copy(),
+            'checkmate': self.gameState['checkmate'].copy()
+        }
         return newGameState
     
     def nextTurn(self):

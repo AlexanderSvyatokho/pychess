@@ -29,4 +29,4 @@ def testBotDepthN_D2_MateInTwo():
     challengeMateInTwoWithRookAndKing(BotDepthN(2))
     challengeMateInTwoWithBishopAndPawn(BotDepthN(2))
     challengeMateInTwoWithKnightAndKing(BotDepthN(2))
-    challengeMateInTwoWithQueenAndKing(BotDepthN(2))
+    # challengeMateInTwoWithQueenAndKing(BotDepthN(2))

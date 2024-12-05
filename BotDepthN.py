@@ -24,13 +24,13 @@ class BotDepthN(BotBase):
 
     def maxMovesForDepth(self, depth: int):
         if depth == 0:
-            return 15
+            return 20
         elif depth == 1:
-            return 10
+            return 15
         elif depth == 2:
-            return 5
+            return 10
         else:
-            return 3
+            return 5
         
     def makeMoveRecursive(self, board: Board, depth: int):
         #logging.info(f'makeIteration: depth={depth}')
@@ -50,7 +50,7 @@ class BotDepthN(BotBase):
         # print(f'Depth={depth}, significant moves count ={len(moves)}, significant moves ={moves}')
         
         # If we are at the root node and there are few significant moves, consider more moves
-        minMovesForDepth0 = 60
+        minMovesForDepth0 = 100
         if (depth == 0 and len(moves) < minMovesForDepth0):
             for vm in validMoves:
                 if vm not in moves:

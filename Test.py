@@ -1,3 +1,6 @@
+import logging 
+import cProfile
+
 from Board import Board
 from BotBase import BotBase
 from BotDepth1 import BotDepth1
@@ -5,33 +8,34 @@ from BotDepthN import BotDepthN
 
 from TestUtils import * 
 
-b = Board()
-b.clear()
+logging.basicConfig(level=logging.DEBUG)
 
-str = '''[][][][][][][][]
-         [][][][][][][][]
-         [][][][][][][][]
-         [][][][][][][][]
-         [][][]BK[][][][]
-         [][][][][][][][]
-         [][][][][][]BQ[]
-         [][][]WK[][][][]'''.replace(' ','')
+def func():
+    b = Board()
+    b.clear()
 
-b.setBoardFromString(str)
-b.gameState.turn = 'B'
+    str = '''BRBNBBBQBKBB[]BR
+             BP[][][]BPBPBPBP
+             []BP[][][]BN[][]
+             [][]BPBP[][][][]
+             [][]WPWP[][][][]
+             []WP[][][]WN[][]
+             WP[][][]WPWPWPWP
+             WRWNWBWQWKWB[]WR'''.replace(' ','')
 
-print(b.getBoardAsString())
+    b.setBoardFromString(str)
 
-bot = BotDepthN(2)
-bot.makeMove(b)
+    bot = BotDepthN(2)
+    bot.makeMove(b)
 
-print(b.getBoardAsString())
+    print(b.getBoardAsString())
 
-b.getValidMoves('W')
+for i in range(5):
+    func()
+    
 
-print(f'Is in check: {b.gameState.isCurrentPlayerInCheck()}')
+# 4.6
 
-b.makeMove(toCell('D1'), toCell('E1'))
-bot.makeMove(b) 
+# 2.7
 
-print(b.getBoardAsString())
+# cProfile.run('func()')
