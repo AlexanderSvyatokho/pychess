@@ -5,17 +5,16 @@ def testSelectSignificantMoves():
         b = Board()
         b.clear()
 
-        b.board[6][4] = 'BK'
-        b.board[1][1] = 'BR'
-        b.board[4][2] = 'BB'
-        b.board[2][6] = 'WP'
-        b.board[1][3] = 'WP'
-        b.board[2][4] = 'WB'
-        b.board[3][2] = 'WN'
-        b.board[4][0] = 'WR'
-        b.board[6][7] = 'WR'
-        b.board[6][6] = 'WK'
-        b.board[7][1] = 'WP'
+        str = '''[][][][][][]WR[]
+                 [][]WP[][][]WK[]
+                 [][][][][][][][]
+                 [][]WB[][][]BK[]
+                 []WP[][][][][][]
+                 [][][]WNBB[][][]
+                 []BR[][][][][]WP
+                 [][][][]WR[][][]'''
+
+        b.setBoardFromString(str)
 
         assert b.gameState.turn == 'W'
 

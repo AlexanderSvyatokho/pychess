@@ -160,108 +160,34 @@ class Board:
         pieceColor = self.board[x][y][0]
         moves = []
 
-        # Horizontal moves to the right
-        for i in range(1, 8):
-            if x + i < 8:
-                if not self.board[x + i][y]:
-                    moves.append((x + i, y))
-                elif self.board[x + i][y][0] != pieceColor:
-                    moves.append((x + i, y)) # Capture
-                    break
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        for dx, dy in directions:
+            for i in range(1, 8):
+                nx, ny = x + i * dx, y + i * dy
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    if not self.board[nx][ny]:
+                        moves.append((nx, ny))
+                    elif self.board[nx][ny][0] != pieceColor:
+                        moves.append((nx, ny))  # Capture
+                        break
+                    else:
+                        break
                 else:
                     break
-
-        # Horizontal moves to the left
-        for i in range(1, 8):
-            if x - i >= 0:
-                if not self.board[x - i][y]:
-                    moves.append((x - i, y))
-                elif self.board[x - i][y][0] != pieceColor:
-                    moves.append((x - i, y)) # Capture
-                    break
-                else:
-                    break   
-
-        # Vertical moves up
-        for i in range(1, 8):
-            if y + i < 8:
-                if not self.board[x][y + i]:
-                    moves.append((x, y + i))
-                elif self.board[x][y + i][0] != pieceColor:
-                    moves.append((x, y + i)) # Capture
-                    break
-                else:
-                    break
-
-        # Vertical moves down
-        for i in range(1, 8):
-            if y - i >= 0:
-                if not self.board[x][y - i]:
-                    moves.append((x, y - i))
-                elif self.board[x][y - i][0] != pieceColor:
-                    moves.append((x, y - i)) # Capture
-                    break
-                else:
-                    break   
 
         return moves
        
-    # Precondition (not verified): knigh at x, y
+    # Precondition (not verified): knight at x, y
     def getMovesForKnight(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x][y][0]
         moves = []
+        knightMoves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
 
-        # Up moves
-        if y + 2 < 8:
-            if x + 1 < 8:
-                if not self.board[x + 1][y + 2]:
-                    moves.append((x + 1, y + 2))
-                elif self.board[x + 1][y + 2][0] != pieceColor:
-                    moves.append((x + 1, y + 2)) # Capture
-        if y + 1 < 8:
-            if x + 2 < 8:
-                if not self.board[x + 2][y + 1]:
-                    moves.append((x + 2, y + 1))
-                elif self.board[x + 2][y + 1][0] != pieceColor:
-                    moves.append((x + 2, y + 1)) # Capture
-        if y - 1 >= 0:
-            if x + 2 < 8:
-                if not self.board[x + 2][y - 1]:
-                    moves.append((x + 2, y - 1))
-                elif self.board[x + 2][y - 1][0] != pieceColor:
-                    moves.append((x + 2, y - 1)) # Capture
-        if y - 2 >= 0:
-            if x + 1 < 8:
-                if not self.board[x + 1][y - 2]:
-                    moves.append((x + 1, y - 2))
-                elif self.board[x + 1][y - 2][0] != pieceColor:
-                    moves.append((x + 1, y - 2)) # Capture
-
-        # Down moves
-        if y - 2 >= 0:
-            if x - 1 >= 0:
-                if not self.board[x - 1][y - 2]:
-                    moves.append((x - 1, y - 2))
-                elif self.board[x - 1][y - 2][0] != pieceColor:
-                    moves.append((x - 1, y - 2)) # Capture
-        if y - 1 >= 0:
-            if x - 2 >= 0:
-                if not self.board[x - 2][y - 1]:
-                    moves.append((x - 2, y - 1))
-                elif self.board[x - 2][y - 1][0] != pieceColor:
-                    moves.append((x - 2, y - 1)) # Capture
-        if y + 1 < 8:
-            if x - 2 >= 0:
-                if not self.board[x - 2][y + 1]:
-                    moves.append((x - 2, y + 1))
-                elif self.board[x - 2][y + 1][0] != pieceColor:
-                    moves.append((x - 2, y + 1))
-        if y + 2 < 8:
-            if x - 1 >= 0:
-                if not self.board[x - 1][y + 2]:
-                    moves.append((x - 1, y + 2))
-                elif self.board[x - 1][y + 2][0] != pieceColor:
-                    moves.append((x - 1, y + 2))
+        for dx, dy in knightMoves:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < 8 and 0 <= ny < 8:
+                if not self.board[nx][ny] or self.board[nx][ny][0] != pieceColor:
+                    moves.append((nx, ny))
 
         return moves
     
@@ -270,47 +196,18 @@ class Board:
         pieceColor = self.board[x][y][0]
         moves = []
 
-        # Diagonal moves to the right up
-        for i in range(1, 8):
-            if x + i < 8 and y + i < 8:
-                if not self.board[x + i][y + i]:
-                    moves.append((x + i, y + i))
-                elif self.board[x + i][y + i][0] != pieceColor:
-                    moves.append((x + i, y + i)) # Capture
-                    break
-                else:
-                    break
-
-        # Diagonal moves to the left up
-        for i in range(1, 8):
-            if x - i >= 0 and y + i < 8:
-                if not self.board[x - i][y + i]:
-                    moves.append((x - i, y + i))
-                elif self.board[x - i][y + i][0] != pieceColor:
-                    moves.append((x - i, y + i)) # Capture
-                    break
-                else:
-                    break
-
-        # Diagonal moves to the right down
-        for i in range(1, 8):
-            if x + i < 8 and y - i >= 0:
-                if not self.board[x + i][y - i]:
-                    moves.append((x + i, y - i))
-                elif self.board[x + i][y - i][0] != pieceColor:
-                    moves.append((x + i, y - i)) # Capture
-                    break
-                else:
-                    break
-
-        # Diagonal moves to the left down
-        for i in range(1, 8):
-            if x - i >= 0 and y - i >= 0:
-                if not self.board[x - i][y - i]:
-                    moves.append((x - i, y - i))
-                elif self.board[x - i][y - i][0] != pieceColor:
-                    moves.append((x - i, y - i)) # Capture
-                    break
+        directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
+        for dx, dy in directions:
+            for i in range(1, 8):
+                nx, ny = x + i * dx, y + i * dy
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    if not self.board[nx][ny]:
+                        moves.append((nx, ny))
+                    elif self.board[nx][ny][0] != pieceColor:
+                        moves.append((nx, ny))  # Capture
+                        break
+                    else:
+                        break
                 else:
                     break
 
@@ -346,51 +243,12 @@ class Board:
         pieceColor = self.board[x][y][0]
         moves = []
 
-        # Up moves
-        if y + 1 < 8:
-            if not self.board[x][y + 1]:
-                moves.append((x, y + 1))
-            elif self.board[x][y + 1][0] != pieceColor:
-                moves.append((x, y + 1)) # Capture
-        if y + 1 < 8 and x + 1 < 8:
-            if not self.board[x + 1][y + 1]:
-                moves.append((x + 1, y + 1))
-            elif self.board[x + 1][y + 1][0] != pieceColor:
-                moves.append((x + 1, y + 1)) # Capture
-        if y + 1 < 8 and x - 1 >= 0:
-            if not self.board[x - 1][y + 1]:
-                moves.append((x - 1, y + 1))
-            elif self.board[x - 1][y + 1][0] != pieceColor:
-                moves.append((x - 1, y + 1)) # Capture
-
-        # Down moves
-        if y - 1 >= 0:
-            if not self.board[x][y - 1]:
-                moves.append((x, y - 1))
-            elif self.board[x][y - 1][0] != pieceColor:
-                moves.append((x, y - 1)) # Capture
-        if y - 1 >= 0 and x + 1 < 8:
-            if not self.board[x + 1][y - 1]:
-                moves.append((x + 1, y - 1))
-            elif self.board[x + 1][y - 1][0] != pieceColor:
-                moves.append((x + 1, y - 1)) # Capture
-        if y - 1 >= 0 and x - 1 >= 0:
-            if not self.board[x - 1][y - 1]:
-                moves.append((x - 1, y - 1))
-            elif self.board[x - 1][y - 1][0] != pieceColor:
-                moves.append((x - 1, y - 1)) # Capture
-
-        # Horizontal moves
-        if x + 1 < 8:
-            if not self.board[x + 1][y]:
-                moves.append((x + 1, y))
-            elif self.board[x + 1][y][0] != pieceColor:
-                moves.append((x + 1, y)) # Capture
-        if x - 1 >= 0:
-            if not self.board[x - 1][y]:
-                moves.append((x - 1, y))
-            elif self.board[x - 1][y][0] != pieceColor:
-                moves.append((x - 1, y)) # Capture
+        directions = [(0, 1), (1, 1), (-1, 1), (0, -1), (1, -1), (-1, -1), (1, 0), (-1, 0)]
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < 8 and 0 <= ny < 8:
+                if not self.board[nx][ny] or self.board[nx][ny][0] != pieceColor:
+                    moves.append((nx, ny))
 
         return moves
     
