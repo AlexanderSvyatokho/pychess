@@ -4,7 +4,7 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
-  - Attempt to rewrite Board so that one dim array is used
+  - Add unit tests for isCellUnderAttack
   - Review and improve the code
 
 Postponed:

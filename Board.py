@@ -121,6 +121,29 @@ class Board:
         else:
             logging.error('Board: getCellsAttackedByPiece: unknown piece type')
             return []
+        
+    def isCellAttackedByPiece(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        pieceX, pieceY = pieceCell
+        piece = self.board[pieceX + 8 * pieceY]
+        if (not piece):
+            logging.warning('Board: isCellAttackedByPiece: no piece at x and y')
+            return False
+    
+        if (piece[1] == 'P'):
+            return self.isCellAttackedByPawn(pieceCell, cellToCheck)
+        elif (piece[1] == 'R'):
+            return self.isCellAttackedByRook(pieceCell, cellToCheck)
+        elif (piece[1] == 'N'):
+            return self.isCellAttackedByKnight(pieceCell, cellToCheck)
+        elif (piece[1] == 'B'):
+            return self.isCellAttackedByBishop(pieceCell, cellToCheck)
+        elif (piece[1] == 'Q'):
+            return self.isCellAttackedByQueen(pieceCell, cellToCheck)
+        elif (piece[1] == 'K'):
+            return self.isCellAttackedByKing(pieceCell, cellToCheck)
+        else:
+            logging.error('Board: isCellAttackedByPiece: unknown piece type')
+            return False
     
     # Precondition (not verified): pawn at x, y
     def getMovesForPawn(self, x, y) -> list[tuple[int, int]]:
@@ -154,6 +177,17 @@ class Board:
             if x < 7:
                 moves.append((x + 1, y + direction))
         return moves
+
+    # Precondition (not verified): pawn at x, y
+    def isCellAttackedByPawn(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        pieceX, pieceY = pieceCell
+        pieceColor = self.board[pieceX + 8 * pieceY][0]
+        direction = 1 if pieceColor == 'W' else -1
+
+        if cellToCheck in [(pieceX - 1, pieceY + direction), (pieceX + 1, pieceY + direction)]:
+            return True
+
+        return False
     
     # Precondition (not verified): rook at x, y
     def getMovesForRook(self, x, y) -> list[tuple[int, int]]:
@@ -176,6 +210,28 @@ class Board:
                     break
 
         return moves
+    
+    # Precondition (not verified): rook at x, y
+    def isCellAttackedByRook(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        pieceX, pieceY = pieceCell
+
+        # If a piece is not on the same row or column, it cannot attack the cell
+        if pieceX != cellToCheck[0] and pieceY != cellToCheck[1]:
+            return False
+
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        for dx, dy in directions:
+            for i in range(1, 8):
+                nx, ny = pieceX + i * dx, pieceY + i * dy
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    if (nx, ny) == cellToCheck:
+                        return True
+                    if self.board[nx + 8 * ny]:
+                        break
+                else:
+                    break
+
+        return False
        
     # Precondition (not verified): knight at x, y
     def getMovesForKnight(self, x, y) -> list[tuple[int, int]]:
@@ -190,6 +246,15 @@ class Board:
                     moves.append((nx, ny))
 
         return moves
+    
+    # Precondition (not verified): knight at x, y
+    def isCellAttackedByKnight(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        pieceX, pieceY = pieceCell
+
+        if cellToCheck in [(pieceX + 2, pieceY + 1), (pieceX + 1, pieceY + 2), (pieceX - 1, pieceY + 2), (pieceX - 2, pieceY + 1), (pieceX - 2, pieceY - 1), (pieceX - 1, pieceY - 2), (pieceX + 1, pieceY - 2), (pieceX + 2, pieceY - 1)]: 
+            return True
+
+        return False
     
     # Precondition (not verified): bishop at x, y
     def getMovesForBishop(self, x, y) -> list[tuple[int, int]]:
@@ -212,10 +277,36 @@ class Board:
                     break
 
         return moves
+    
+    # Precondition (not verified): bishop at x, y
+    def isCellAttackedByBishop(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        pieceX, pieceY = pieceCell
+
+        # If a piece is not on the same diagonal, it cannot attack the cell
+        if abs(pieceX - cellToCheck[0]) != abs(pieceY - cellToCheck[1]):
+            return False
+
+        directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
+        for dx, dy in directions:
+            for i in range(1, 8):
+                nx, ny = pieceX + i * dx, pieceY + i * dy
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    if (nx, ny) == cellToCheck:
+                        return True
+                    if self.board[nx + 8 * ny]:
+                        break
+                else:
+                    break
+
+        return False
         
     # Precondition (not verified): queen at x, y
     def getMovesForQueen(self, x, y) -> list[tuple[int, int]]:
         return self.getMovesForRook(x, y) + self.getMovesForBishop(x, y)
+    
+    # Precondition (not verified): queen at x, y
+    def isCellAttackedByQueen(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        return self.isCellAttackedByRook(pieceCell, cellToCheck) or self.isCellAttackedByBishop(pieceCell, cellToCheck)
     
     # Precondition (not verified): king at x, y
     def getMovesForKing(self, x, y) -> list[tuple[int, int]]:
@@ -238,7 +329,7 @@ class Board:
 
         return moves
     
-    # Precondition (not verified): pawn at x, y
+    # Precondition (not verified): king at x, y
     def getCellsAttackedByKing(self, x, y) -> list[tuple[int, int]]:
         pieceColor = self.board[x + 8 * y][0]
         moves = []
@@ -251,6 +342,13 @@ class Board:
                     moves.append((nx, ny))
 
         return moves
+    
+    # Precondition (not verified): king at x, y
+    def isCellAttackedByKing(self, pieceCell: tuple[int, int], cellToCheck: tuple[int, int]) -> bool:
+        if abs(pieceCell[0] - cellToCheck[0]) <= 1 and abs(pieceCell[1] - cellToCheck[1]) <= 1:
+            return True
+        
+        return False
     
     # precondition (not verified): king at x, y; castling is possible
     def castle(self, kingX, kingY, side):
@@ -283,22 +381,16 @@ class Board:
             if piece and piece[0] == attackerColor:
                 pieceX = i % 8
                 pieceY = i // 8
-                moves = self.getCellsAttackedByPiece(pieceX, pieceY)
-                if (x, y) in moves:
+                if self.isCellAttackedByPiece((pieceX, pieceY), (x, y)):
                     return True
         return False
     
     # Returns True if any of the cells in the list are under attack by the attackerColor
     def areCellsUnderAttack(self, cells: list[tuple[int, int]], attackerColor):
-        for i in range(0, 64):
-            piece = self.board[i]
-            if piece and piece[0] == attackerColor:
-                pieceX = i % 8
-                pieceY = i // 8
-                moves = self.getCellsAttackedByPiece(pieceX, pieceY)
-                for c in cells:
-                    if c in moves:
-                        return True
+        for cell in cells:
+            if self.isCellUnderAttack(cell[0], cell[1], attackerColor):
+                return True
+            
         return False
     
     def isPlayerInCheck(self, playerColor):

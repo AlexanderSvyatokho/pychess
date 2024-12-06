@@ -33,6 +33,6 @@ def func():
 for i in range(5):
    func()
     
-# 4.0
+# 2.6
 
 # cProfile.run('func()')
