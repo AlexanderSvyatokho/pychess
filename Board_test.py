@@ -153,7 +153,6 @@ def testGetMovesForKingAfterMove():
     assert b.makeMove(toCell('e8'), toCell('e7'))
     assert set(b.getMovesForPiece(*toCell('e7'))) == set(toCells(['e8', 'd6', 'f6']))
 
-
 def testGetMovesForKingCastleShort():
     b = Board()
     assert b.makeMove(toCell('g2'), toCell('g3'))

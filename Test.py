@@ -31,11 +31,13 @@ def func():
     print(b.getBoardAsString())
 
 for i in range(5):
-    func()
+   func()
     
 
 # 4.6
 
 # 2.7
+
+# 2.55
 
 # cProfile.run('func()')

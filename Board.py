@@ -6,16 +6,16 @@ from Constants import *
 # Stores chess board's state
 class Board:
     def __init__(self):
-        self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.board = [None for _ in range(8 * 8)]
         self.gameState = GameState()
         self.setToDefault()
 
     def clear(self):
-        self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.board = [None for _ in range(8 * 8)]
 
     def copy(self):
         newBoard = Board()
-        newBoard.board = [col.copy() for col in self.board]
+        newBoard.board = self.board.copy()
         newBoard.gameState = self.gameState.copy()
         return newBoard
 
@@ -26,13 +26,13 @@ class Board:
         self.gameState.setToDefault()
         
         # Set up the board with pieces
-        self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.board = [None for _ in range(8 * 8)]
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         for i in range(8):
-            self.board[i][0] = 'W' + pieces[i]
-            self.board[i][1] = 'WP'
-            self.board[i][6] = 'BP'
-            self.board[i][7] = 'B' + pieces[i]
+            self.board[i] = 'W' + pieces[i]
+            self.board[i + 8 * 1] = 'WP'
+            self.board[i + 8 * 6] = 'BP'
+            self.board[i + 8 * 7] = 'B' + pieces[i]
 
     def setToDefaultTest(self):
         self.gameState.setToDefault()
@@ -53,7 +53,7 @@ class Board:
         self.setToDefault()
 
     def getPiece(self, x, y):
-        return self.board[x][y]
+        return self.board[x + 8 * y]
      
     def getTurn(self):
         return self.gameState.turn
@@ -64,12 +64,12 @@ class Board:
     
     # Get a list of cells a piece at x, y can move to
     def getMovesForPiece(self, x, y) -> list[tuple[int, int]]:
-        piece = self.board[x][y]
+        piece = self.board[x + 8 * y]
         if (not piece):
             logging.warning('Board: getMovesForPiece: no piece at x and y')
             return []
         
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
 
         if (piece[1] == 'P'):
@@ -101,7 +101,7 @@ class Board:
         
     # Get a list of cells attacked by a piece at x, y
     def getCellsAttackedByPiece(self, x, y) -> list[tuple[int, int]]:
-        piece = self.board[x][y]
+        piece = self.board[x + 8 * y]
         if (not piece):
             logging.warning('Board: getCellsAttackedByPiece: no piece at x and y')
             return []
@@ -124,27 +124,27 @@ class Board:
     
     # Precondition (not verified): pawn at x, y
     def getMovesForPawn(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
         direction = 1 if pieceColor == 'W' else -1
 
         if (y + direction <= 7) and (y + direction >= 0):
-            if self.board[x][y + direction] == None:
+            if self.board[x + 8 * (y + direction)] == None:
                 moves.append((x, y + direction))
-                if pieceColor == 'W' and y == 1 and self.board[x][y + 2 * direction] == None:
+                if pieceColor == 'W' and y == 1 and self.board[x + 8 * (y + 2 * direction)] == None:
                     moves.append((x, y + 2 * direction))
-                if pieceColor == 'B' and y == 6 and self.board[x][y + 2 * direction] == None:
+                if pieceColor == 'B' and y == 6 and self.board[x + 8 * (y + 2 * direction)] == None:
                     moves.append((x, y + 2 * direction))
             # Captures
-            if x > 0 and self.board[x - 1][y + direction] and self.board[x - 1][y + direction][0] != pieceColor:
+            if x > 0 and self.board[x - 1 + 8 * (y + direction)] and self.board[x - 1 + 8 * (y + direction)][0] != pieceColor:
                 moves.append((x - 1, y + direction))
-            if x < 7 and self.board[x + 1][y + direction] and self.board[x + 1][y + direction][0] != pieceColor:
+            if x < 7 and self.board[x + 1 + 8 * (y + direction)] and self.board[x + 1 + 8 * (y + direction)][0] != pieceColor:
                 moves.append((x + 1, y + direction))
         return moves
     
     # Precondition (not verified): pawn at x, y
     def getCellsAttackedByPawn(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
         direction = 1 if pieceColor == 'W' else -1
 
@@ -157,7 +157,7 @@ class Board:
     
     # Precondition (not verified): rook at x, y
     def getMovesForRook(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
 
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
@@ -165,9 +165,9 @@ class Board:
             for i in range(1, 8):
                 nx, ny = x + i * dx, y + i * dy
                 if 0 <= nx < 8 and 0 <= ny < 8:
-                    if not self.board[nx][ny]:
+                    if not self.board[nx + 8 * ny]:
                         moves.append((nx, ny))
-                    elif self.board[nx][ny][0] != pieceColor:
+                    elif self.board[nx + 8 * ny][0] != pieceColor:
                         moves.append((nx, ny))  # Capture
                         break
                     else:
@@ -179,21 +179,21 @@ class Board:
        
     # Precondition (not verified): knight at x, y
     def getMovesForKnight(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
         knightMoves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
 
         for dx, dy in knightMoves:
             nx, ny = x + dx, y + dy
             if 0 <= nx < 8 and 0 <= ny < 8:
-                if not self.board[nx][ny] or self.board[nx][ny][0] != pieceColor:
+                if not self.board[nx + 8 * ny] or self.board[nx + 8 * ny][0] != pieceColor:
                     moves.append((nx, ny))
 
         return moves
     
     # Precondition (not verified): bishop at x, y
     def getMovesForBishop(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
 
         directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
@@ -201,9 +201,9 @@ class Board:
             for i in range(1, 8):
                 nx, ny = x + i * dx, y + i * dy
                 if 0 <= nx < 8 and 0 <= ny < 8:
-                    if not self.board[nx][ny]:
+                    if not self.board[nx + 8 * ny]:
                         moves.append((nx, ny))
-                    elif self.board[nx][ny][0] != pieceColor:
+                    elif self.board[nx + 8 * ny][0] != pieceColor:
                         moves.append((nx, ny))  # Capture
                         break
                     else:
@@ -219,42 +219,42 @@ class Board:
     
     # Precondition (not verified): king at x, y
     def getMovesForKing(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = self.getCellsAttackedByKing(x, y)
 
         # Castling
         if pieceColor == 'W':
             if (x, y) == (4, 0):
-                if self.gameState.getCanCastle('W','K') and not self.board[5][0] and not self.board[6][0] and not self.areCellsUnderAttack([(4, 0), (5, 0), (6, 0)], 'B'):
+                if self.gameState.getCanCastle('W','K') and not self.board[5 + 8 * 0] and not self.board[6 + 8 * 0] and not self.areCellsUnderAttack([(4, 0), (5, 0), (6, 0)], 'B'):
                     moves.append((6, 0))
-                if self.gameState.getCanCastle('W','Q') and not self.board[1][0] and not self.board[2][0] and not self.board[3][0] and not self.areCellsUnderAttack([(4, 0), (3, 0), (2, 0)], 'B'):
+                if self.gameState.getCanCastle('W','Q') and not self.board[1 + 8 * 0] and not self.board[2 + 8 * 0] and not self.board[3 + 8 * 0] and not self.areCellsUnderAttack([(4, 0), (3, 0), (2, 0)], 'B'):
                     moves.append((2, 0))
         else:
             if (x, y) == (4, 7):
-                if self.gameState.getCanCastle('B','K') and not self.board[5][7] and not self.board[6][7] and not self.areCellsUnderAttack([(4, 7), (5, 7), (6, 7)], 'W'):
+                if self.gameState.getCanCastle('B','K') and not self.board[5 + 8 * 7] and not self.board[6 + 8 * 7] and not self.areCellsUnderAttack([(4, 7), (5, 7), (6, 7)], 'W'):
                     moves.append((6, 7))
-                if self.gameState.getCanCastle('B','Q') and not self.board[1][7] and not self.board[2][7] and not self.board[3][7] and not self.areCellsUnderAttack([(4, 7), (3, 7), (2, 7)], 'W'):
+                if self.gameState.getCanCastle('B','Q') and not self.board[1 + 8 * 7] and not self.board[2 + 8 * 7] and not self.board[3 + 8 * 7] and not self.areCellsUnderAttack([(4, 7), (3, 7), (2, 7)], 'W'):
                     moves.append((2, 7))
 
         return moves
     
     # Precondition (not verified): pawn at x, y
     def getCellsAttackedByKing(self, x, y) -> list[tuple[int, int]]:
-        pieceColor = self.board[x][y][0]
+        pieceColor = self.board[x + 8 * y][0]
         moves = []
 
         directions = [(0, 1), (1, 1), (-1, 1), (0, -1), (1, -1), (-1, -1), (1, 0), (-1, 0)]
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if 0 <= nx < 8 and 0 <= ny < 8:
-                if not self.board[nx][ny] or self.board[nx][ny][0] != pieceColor:
+                if not self.board[nx + 8 * ny] or self.board[nx + 8 * ny][0] != pieceColor:
                     moves.append((nx, ny))
 
         return moves
     
     # precondition (not verified): king at x, y; castling is possible
     def castle(self, kingX, kingY, side):
-        pieceColor = self.board[kingX][kingY][0]
+        pieceColor = self.board[kingX + 8 * kingY][0]
         if side == 'K':
             self.forceMove((kingX, kingY), (kingX + 2, kingY))
             self.forceMove((kingX + 3, kingY), (kingX + 1, kingY))
@@ -269,7 +269,7 @@ class Board:
         moves = []
         for y in range(0, 8):
             for x in range(0, 8):
-                piece = self.board[x][y]
+                piece = self.board[x + 8 * y]
                 if piece and piece[0] == playerColor:
                     pieceMoves = self.getMovesForPiece(x, y)
                     for move in pieceMoves:
@@ -279,7 +279,7 @@ class Board:
     def isCellUnderAttack(self, x, y, attackerColor):
         for i in range(0, 8):
             for j in range(0, 8):
-                piece = self.board[i][j]
+                piece = self.board[i + 8 * j]
                 if piece and piece[0] == attackerColor:
                     moves = self.getCellsAttackedByPiece(i, j)
                     if (x, y) in moves:
@@ -290,7 +290,7 @@ class Board:
     def areCellsUnderAttack(self, cells: list[tuple[int, int]], attackerColor):
         for i in range(0, 8):
             for j in range(0, 8):
-                piece = self.board[i][j]
+                piece = self.board[i + 8 * j]
                 if piece and piece[0] == attackerColor:
                     moves = self.getCellsAttackedByPiece(i, j)
                     for c in cells:
@@ -302,14 +302,14 @@ class Board:
         opponentColor = oppositeColor(playerColor)
         for y in range(0, 8):
             for x in range(0, 8):
-                piece = self.board[x][y]
+                piece = self.board[x + 8 * y]
                 if piece and piece[0] == playerColor and piece[1] == 'K':
                     return self.isCellUnderAttack(x, y, opponentColor)
                 
     def hasValidMoves(self, playerColor):
         for y in range(0, 8):
             for x in range(0, 8):
-                piece = self.board[x][y]
+                piece = self.board[x + 8 * y]
                 if piece and piece[0] == playerColor:
                     if self.getMovesForPiece(x, y):
                         return True
@@ -319,15 +319,15 @@ class Board:
         # Autopromote pawns on the last rows to queens
         for y in range(0, 8):
             for x in range(0, 8):
-                piece = self.board[x][y]
+                piece = self.board[x + 8 * y]
                 if piece and piece[1] == 'P' and (y == 0 or y == 7):
-                    self.board[x][y] = piece[0] + 'Q'
+                    self.board[x + 8 * y] = piece[0] + 'Q'
                 
     # Moves a piece from fromCell to toCell without checking if the move is valid
     # Precondition (not verified): piece at x, y
     def forceMove(self, fromCell: tuple[int, int], toCell: tuple[int, int]):
-        self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
-        self.board[fromCell[0]][fromCell[1]] = None
+        self.board[toCell[0] + 8 * toCell[1]] = self.board[fromCell[0] + 8 * fromCell[1]]
+        self.board[fromCell[0] + 8 * fromCell[1]] = None
         self.promotePawns()
                 
     ############################################################
@@ -383,8 +383,8 @@ class Board:
                     elif fromCell == (7, 7):
                         self.gameState.setCannotCastle(self.getTurn(), 'K')
 
-            self.board[toCell[0]][toCell[1]] = self.board[fromCell[0]][fromCell[1]]
-            self.board[fromCell[0]][fromCell[1]] = None
+            self.board[toCell[0] + 8 * toCell[1]] = self.board[fromCell[0] + 8 * fromCell[1]]
+            self.board[fromCell[0] + 8 * fromCell[1]] = None
         
         if piece[1] == 'P':
             self.promotePawns()
@@ -425,7 +425,7 @@ class Board:
         blackPieces = []
         for y in range(0, 8):
             for x in range(0, 8):
-                piece = self.board[x][y]
+                piece = self.board[x + 8 * y]
                 if piece and piece[1] != 'K':
                     if piece[1] == 'P' or piece[1] == 'Q' or piece[1] == 'R':
                         return False
@@ -461,12 +461,11 @@ class Board:
 
         # Calculate the score based on the pieces left
         score = 0
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x][y]
-                pieceValue = PIECE_VALUES.get(piece)
-                if pieceValue:
-                    score += (pieceValue if piece[0] == 'W' else -pieceValue)
+        for i in range(0, 64):
+            piece = self.board[i]
+            pieceValue = PIECE_VALUES.get(piece)
+            if pieceValue:
+                score += (pieceValue if piece[0] == 'W' else -pieceValue)
 
         self.gameState.materialScore = score
 
@@ -482,7 +481,7 @@ class Board:
         str = ''
         for y in range(0, 8):
             for x in range(0, 8):
-                pc = self.board[x][7 - y]
+                pc = self.board[x + 8 * (7 - y)]
                 str += pc if pc else '[]'
             str += '\n'
         return str
@@ -491,14 +490,14 @@ class Board:
         rows = boardStr.split('\n')
         for y in range(0, 8):
             for x in range(0, 8):
-                self.board[x][7 - y] = rows[y][x * 2:x * 2 + 2]
-                if self.board[x][7 - y] == '[]':
-                    self.board[x][7 - y] = None
+                self.board[x + 8 * (7 - y)] = rows[y][x * 2:x * 2 + 2]
+                if self.board[x + 8 * (7 - y)] == '[]':
+                    self.board[x + 8 * (7 - y)] = None
 
-        if self.board[4][0] != 'WK':
+        if self.board[4 +  8 * 0] != 'WK':
             self.gameState.setCannotCastle('W')
 
-        if self.board[4][7] != 'BK':
+        if self.board[4 + 8 * 7] != 'BK':
             self.gameState.setCannotCastle('B')
      
     def __str__(self):
