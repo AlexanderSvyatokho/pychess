@@ -6,12 +6,12 @@ from Constants import *
 # Stores chess board's state
 class Board:
     def __init__(self):
-        self.board = [None for _ in range(8 * 8)]
+        self.board = [None for _ in range(64)]
         self.gameState = GameState()
         self.setToDefault()
 
     def clear(self):
-        self.board = [None for _ in range(8 * 8)]
+        self.board = [None for _ in range(64)]
 
     def copy(self):
         newBoard = Board()
@@ -26,7 +26,7 @@ class Board:
         self.gameState.setToDefault()
         
         # Set up the board with pieces
-        self.board = [None for _ in range(8 * 8)]
+        self.board = [None for _ in range(64)]
         pieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         for i in range(8):
             self.board[i] = 'W' + pieces[i]
@@ -267,61 +267,66 @@ class Board:
     # Get a list of all valid moves for a player as a list of tuples (fromCell, toCell)
     def getValidMoves(self, playerColor) -> list[tuple[tuple[int, int], tuple[int, int]]]:
         moves = []
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x + 8 * y]
-                if piece and piece[0] == playerColor:
-                    pieceMoves = self.getMovesForPiece(x, y)
-                    for move in pieceMoves:
-                        moves.append(((x, y), move))
+        for i in range(0, 64):
+            piece = self.board[i]
+            if piece and piece[0] == playerColor:
+                x = i % 8
+                y = i // 8
+                pieceMoves = self.getMovesForPiece(x, y)
+                for move in pieceMoves:
+                    moves.append(((x, y), move))
         return moves
     
     def isCellUnderAttack(self, x, y, attackerColor):
-        for i in range(0, 8):
-            for j in range(0, 8):
-                piece = self.board[i + 8 * j]
-                if piece and piece[0] == attackerColor:
-                    moves = self.getCellsAttackedByPiece(i, j)
-                    if (x, y) in moves:
-                        return True
+        for i in range(0, 64):
+            piece = self.board[i]
+            if piece and piece[0] == attackerColor:
+                pieceX = i % 8
+                pieceY = i // 8
+                moves = self.getCellsAttackedByPiece(pieceX, pieceY)
+                if (x, y) in moves:
+                    return True
         return False
     
     # Returns True if any of the cells in the list are under attack by the attackerColor
     def areCellsUnderAttack(self, cells: list[tuple[int, int]], attackerColor):
-        for i in range(0, 8):
-            for j in range(0, 8):
-                piece = self.board[i + 8 * j]
-                if piece and piece[0] == attackerColor:
-                    moves = self.getCellsAttackedByPiece(i, j)
-                    for c in cells:
-                        if c in moves:
-                            return True
+        for i in range(0, 64):
+            piece = self.board[i]
+            if piece and piece[0] == attackerColor:
+                pieceX = i % 8
+                pieceY = i // 8
+                moves = self.getCellsAttackedByPiece(pieceX, pieceY)
+                for c in cells:
+                    if c in moves:
+                        return True
         return False
     
     def isPlayerInCheck(self, playerColor):
         opponentColor = oppositeColor(playerColor)
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x + 8 * y]
-                if piece and piece[0] == playerColor and piece[1] == 'K':
-                    return self.isCellUnderAttack(x, y, opponentColor)
+        for i in range(0, 64):
+            piece = self.board[i]
+            pieceX = i % 8
+            pieceY = i // 8
+            if piece and piece[0] == playerColor and piece[1] == 'K':
+                return self.isCellUnderAttack(pieceX, pieceY, opponentColor)
                 
     def hasValidMoves(self, playerColor):
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x + 8 * y]
-                if piece and piece[0] == playerColor:
-                    if self.getMovesForPiece(x, y):
-                        return True
+        for i in range(0, 64):
+            piece = self.board[i]
+            if piece and piece[0] == playerColor:
+                pieceX = i % 8
+                pieceY = i // 8
+                if self.getMovesForPiece(pieceX, pieceY):
+                    return True
         return False
     
     def promotePawns(self):
         # Autopromote pawns on the last rows to queens
-        for y in range(0, 8):
-            for x in range(0, 8):
-                piece = self.board[x + 8 * y]
-                if piece and piece[1] == 'P' and (y == 0 or y == 7):
-                    self.board[x + 8 * y] = piece[0] + 'Q'
+        for i in range(0, 64):
+            piece = self.board[i]
+            pieceY = i // 8
+            if piece and piece[1] == 'P' and (pieceY == 0 or pieceY == 7):
+                self.board[i] = piece[0] + 'Q'
                 
     # Moves a piece from fromCell to toCell without checking if the move is valid
     # Precondition (not verified): piece at x, y

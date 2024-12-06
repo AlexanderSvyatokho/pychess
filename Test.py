@@ -14,13 +14,13 @@ def func():
     b = Board()
     b.clear()
 
-    str = '''BRBNBBBQBKBB[]BR
-             BP[][][]BPBPBPBP
+    str = '''BRBNBBBQBK[][]BR
+             [][][][]BPBPBPBP
              []BP[][][]BN[][]
              [][]BPBP[][][][]
              [][]WPWP[][][][]
              []WP[][][]WN[][]
-             WP[][][]WPWPWPWP
+             WP[][][]WPWPWP[]
              WRWNWBWQWKWB[]WR'''.replace(' ','')
 
     b.setBoardFromString(str)
@@ -33,11 +33,6 @@ def func():
 for i in range(5):
    func()
     
-
-# 4.6
-
-# 2.7
-
-# 2.55
+# 4.0
 
 # cProfile.run('func()')
