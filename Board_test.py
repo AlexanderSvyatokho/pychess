@@ -284,3 +284,167 @@ def testSetBoardFromString():
     b.setBoardFromString(str)
     assert b.getBoardAsString().strip() == str
     assert b.getPiece(*toCell('f2')) == 'BK'
+
+def testIsCellUnderAttackByRook():
+    b = Board()
+    b.clear()
+
+    str = '''[][][][][][][][]
+             [][][][][][][]WK
+             []BN[][]WR[][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][][]BP[][][]
+             []BK[][][][][][]
+             [][][][][][][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    assert b.isCellUnderAttack(*toCell('e7'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e8'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e5'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e3'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e2'), 'W') == False
+    assert b.isCellUnderAttack(*toCell('e1'), 'W') == False
+
+    assert b.isCellUnderAttack(*toCell('a6'), 'W') == False
+    assert b.isCellUnderAttack(*toCell('b6'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('c6'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d6'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('f6'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('g6'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('h6'), 'W') == True
+
+    assert b.isCellUnderAttack(*toCell('f7'), 'W') == False
+
+def testIsCellUnderAttackByBishop():
+    b = Board()
+    b.clear()
+
+    str = '''[][][][]BK[][][]
+             []BB[][][][]WP[]
+             [][][][][][][][]
+             [][][]WR[][][][]
+             [][][][][][][][]
+             [][]BB[][][][][]
+             []WN[][][][][][]
+             [][][][]WK[][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    assert b.isCellUnderAttack(*toCell('a8'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('c6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('d5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e4'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('a6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('c8'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('b8'), 'B') == False
+
+    assert b.isCellUnderAttack(*toCell('a1'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('b2'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('d4'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('f6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g7'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('h8'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('b4'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('a5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('d2'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e1'), 'B') == True
+
+def testIsCellUnderAttackByKnight():
+    b = Board()
+    b.clear()
+
+    str = '''[][][][]BK[][][]
+             [][][][][][][][]
+             [][][][][]WN[][]
+             BR[][][][][][][]
+             [][][][][][][][]
+             []WN[][][][][][]
+             [][][][][][][][]
+             [][][][]WK[][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    assert b.isCellUnderAttack(*toCell('a1'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('a5'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('b1'), 'W') == False
+    assert b.isCellUnderAttack(*toCell('c1'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d2'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('c5'), 'W') == True
+
+    assert b.isCellUnderAttack(*toCell('e8'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('g8'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('h7'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('h5'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('g4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d5'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d7'), 'W') == True
+
+def testIsCellUnderAttackByQueen():
+    b = Board()
+    b.clear()
+
+    str = '''[][][][]BK[][][]
+             [][][][][][][][]
+             [][][][][]WN[][]
+             [][]WR[]BQ[][][]
+             [][][][][][][][]
+             [][]WB[][][][][]
+             [][][][][][][][]
+             [][][][]WK[][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    assert b.isCellUnderAttack(*toCell('e8'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e7'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e4'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e3'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e2'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e1'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('d5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('c5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('b5'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('f5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('h5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('d4'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('c3'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('b2'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('f6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g7'), 'B') == False
+
+def testIsCellUnderAttackByKing():
+    b = Board()
+    b.clear()
+
+    str = '''[][][][][][][][]
+             [][][][][]WP[][]
+             [][][][][]BK[][]
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][]WK[][][][]
+             [][][]BP[][][][]
+             [][][][][][][][]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    assert b.isCellUnderAttack(*toCell('f7'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('f8'), 'B') == False
+    assert b.isCellUnderAttack(*toCell('e7'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g7'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g6'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('e5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('f5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('g5'), 'B') == True
+    assert b.isCellUnderAttack(*toCell('f4'), 'B') == False
+
+    assert b.isCellUnderAttack(*toCell('c4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e4'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('c3'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e3'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('c2'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('d2'), 'W') == True
+    assert b.isCellUnderAttack(*toCell('e2'), 'W') == True
