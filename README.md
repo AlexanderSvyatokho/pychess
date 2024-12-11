@@ -1,6 +1,12 @@
 # PyChess
 Simple chess game written in Python not using any engines and without studying any chess algorithms. Naive implementation for fun.
 
+Features:
+  - Core chess rules implemented
+  - Ability to play human vs human
+  - Ability to play vs a bot 
+  - Several bots created with depth up to 3 levels
+
 ![Screenshot](pychess.png)
 
 # Run instructions
