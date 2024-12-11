@@ -17,7 +17,7 @@ from BotDepthN import BotDepthN
 
 logging.basicConfig(level=logging.DEBUG)
 
-class PyChess(QtWidgets.QWidget):
+class PytChess(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.board = Board()
@@ -26,14 +26,14 @@ class PyChess(QtWidgets.QWidget):
         self.boardWidget = BoardWidget(self.board)
         self.gameControl = GameControlWidget()
         self.statusBar = QStatusBar(self)
-        self.statusBar.showMessage('Welcome to PyChess!')
+        self.statusBar.showMessage('Welcome to PytChess!')
         
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.boardWidget, 0, 0)
         mainLayout.addWidget(self.gameControl, 0, 1)
         mainLayout.addWidget(self.statusBar, 1, 0, 1, 2)
         self.setLayout(mainLayout)
-        self.setWindowTitle('PyChess')
+        self.setWindowTitle('PytChess')
 
         self.gameControl.newGameStarted.connect(self.onNewGame)
         self.boardWidget.moveMadeByPlayer.connect(self.onMoveMadeByPlayer)
@@ -92,7 +92,7 @@ class PyChess(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 
-    widget = PyChess()
+    widget = PytChess()
     widget.resize(800, 600)
     widget.show()
 

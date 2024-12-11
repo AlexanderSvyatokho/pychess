@@ -12,7 +12,7 @@ def testSelectSignificantMoves():
                  []WP[][][][][][]
                  [][][]WNBB[][][]
                  []BR[][][][][]WP
-                 [][][][]WR[][][]'''
+                 [][][][]WR[][][]'''.replace(' ','')
 
         b.setBoardFromString(str)
 
@@ -39,8 +39,7 @@ def testSelectSignificantMoves():
 
         assert set(significantMoves) == set(expectedMoves)
 
-
-def testSelectSignificantMoves():
+def testSelectSignificantMoves2():
     b = Board()
     b.clear()
 

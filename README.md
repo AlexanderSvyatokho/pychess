@@ -1,4 +1,4 @@
-# PyChess
+# PytChess
 Simple chess game written in Python not using any engines and without studying any chess algorithms. Naive implementation for fun.
 
 Features:
@@ -7,12 +7,12 @@ Features:
   - Ability to play vs a bot 
   - Several bots created with depth up to 3 levels
 
-![Screenshot](pychess.png)
+![Screenshot](pytchess.png)
 
 # Run instructions
 ```
 pip install pyside6
-python .\pychess.py
+python .\pytchess.py
 ```
 
 # Test instructions
@@ -24,7 +24,7 @@ pytest
 # Package build instructions
 ```
 pip install pyinstaller
-pyinstaller --onefile --noconsole --add-data "resources;resources" pychess.py
+pyinstaller --onefile --noconsole --add-data "resources;resources" pytchess.py
 ```
 
 # ToDo list
