@@ -27,7 +27,7 @@ pip install pyinstaller
 pyinstaller --onefile --noconsole --add-data "resources;resources" pychess.py
 ```
 
-## ToDo list
+# ToDo list
   - Bots logic improvements
   - Ability to play for black
   - Promotion options (currently Queen is the only option)
