@@ -20,7 +20,7 @@ class Board:
         return newBoard
 
     def setToDefault(self):
-        # setToDefaultTest()
+        # self.setToDefaultTest()
         # return
     
         self.gameState.setToDefault()
@@ -38,14 +38,14 @@ class Board:
         self.gameState.setToDefault()
 
         # Set up the board with pieces
-        str = '''[][][][][]BK[][]
-                 [][][][][]BP[]BP
-                 [][][][][]WP[][]
-                 [][][]WK[][][][]
+        str = '''[][][][]BK[][]BR
+                 [][][][][]BPBPBP
                  [][][][][][][][]
                  [][][][][][][][]
-                 BP[][][]WR[][][]
-                 []BR[][][][]WR[]'''.replace(' ','')
+                 [][][][][][][][]
+                 [][][][][][][][]
+                 [][][][][][][][]
+                 [][][][]WK[]WR[]'''.replace(' ','')
         
         self.setBoardFromString(str) 
 
@@ -361,6 +361,7 @@ class Board:
             self.forceMove((kingX - 4, kingY), (kingX - 1, kingY))
         
         self.gameState.setCannotCastle(pieceColor)
+        self.gameState.setCastled(pieceColor)
 
     # Get a list of all valid moves for a player as a list of tuples (fromCell, toCell)
     def getValidMoves(self, playerColor) -> list[tuple[tuple[int, int], tuple[int, int]]]:

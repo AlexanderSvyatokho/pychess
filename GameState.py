@@ -47,7 +47,7 @@ class GameState:
             self.canCastle[color]['K'] = False
             self.canCastle[color]['Q'] = False
 
-    def getCasted(self, color: str):
+    def getCastled(self, color: str):
         return self.castled[color]
     
     def setCastled(self, color: str):

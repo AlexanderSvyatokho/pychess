@@ -7,7 +7,6 @@ Core:
   - Review and improve the code
 
 Postponed:
-  - Bot: prioritize castling
   - Ability to play for black
   - Promotion options (currently Queen is the only option)
   - En passant move

@@ -37,8 +37,9 @@ class BotDepthN(BotBase):
         myColor = board.getTurn()
         maxMovesForDepth = self.maxMovesForDepth(depth)
 
+        # If we reached the maximum depth, return the current score
         if depth >= self.maxDepth:
-            return board.gameState.materialScore
+            return self.getBoardScore(board, myColor)
        
         validMoves = []
         if (board.gameState.isGameOngoing()):
@@ -47,7 +48,7 @@ class BotDepthN(BotBase):
 
         moves = self.selectSignificantMoves(board, validMoves)
 
-        # print(f'Depth={depth}, significant moves count ={len(moves)}, significant moves ={moves}')
+        # logging.info(f'Depth={depth}, significant moves count ={len(moves)}, significant moves ={moves}')
         
         # If we are at the root node and there are few significant moves, consider more moves
         minMovesForDepth0 = 100
@@ -61,11 +62,12 @@ class BotDepthN(BotBase):
         if (depth >= 0 and len(moves) > maxMovesForDepth):
             moves = moves[:maxMovesForDepth]
 
-        # print(f'Depth={depth}, selected moves count ={len(moves)}, selected moves ={moves}')
+        # logging.info(f'Depth={depth}, selected moves count ={len(moves)}, selected moves ={moves}')
 
         if(len(moves) > 0):
             bestMove = moves[0]
             # From all possible moves, pick the one that gives the worst maximum score for the opponent
+            # This assumes the opponent always picks the best move in response
             worstOpponentScore = 1000000
             for move in moves:
                 bestResponseOpponentScore = -1000000
@@ -91,12 +93,11 @@ class BotDepthN(BotBase):
                             if len(opponentMoves) >= minOpponentsMoves:
                                 break
 
-                # print(f'opponentMoves for move {move}: depth={depth}, moves count ={len(opponentMoves)}, opponentMoves ={opponentMoves}')
+                # logging.info(f'opponentMoves for move {move}: depth={depth}, moves count ={len(opponentMoves)}, opponentMoves ={opponentMoves}')
 
                 # If the opponent has no valid moves (checkmate or draw) use the current score
                 if len(opponentMoves) == 0:
-                    score = boardCopy.gameState.materialScore
-                    # print(f'Found mate or draw with move: {move}, score: {score}')
+                    score = self.getBoardScore(boardCopy, myColor)
                     if myColor == 'W':
                         score = -score
                     if score > bestResponseOpponentScore:
@@ -119,12 +120,12 @@ class BotDepthN(BotBase):
                     bestMove = move
 
             if depth == 0:
-                # print(f'Making move: {bestMove}')
+                # logging.info(f'Making move: {bestMove}')
                 board.makeMove(bestMove[0], bestMove[1], False)
                 return 
             
-            # print(f'Returning to parent node!')
+            # logging.info(f'Returning to parent node!')
 
             return -worstOpponentScore if myColor == 'W' else worstOpponentScore
         else:
-            return board.gameState.materialScore
+            return self.getBoardScore(board, myColor)

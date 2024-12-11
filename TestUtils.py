@@ -282,8 +282,8 @@ def challengeMateInTwoWithQueenAndKing(bot):
     str = '''[][][][][][][][]
              [][][][][][][][]
              [][][][][][][][]
-             [][][][][][][][]
-             [][][]BK[][][][]
+             [][][]BP[][][][]
+             [][][]BK[][]BP[]
              [][][][][][][][]
              [][][][][][]BQ[]
              [][][]WK[][][][]'''.replace(' ','')
@@ -302,3 +302,30 @@ def challengeMateInTwoWithQueenAndKing(bot):
 
     assert b.gameState.isCurrentPlayerInCheckmate() == True
     assert b.getPiece(*toCell('E2')) == 'BQ' or b.getPiece(*toCell('G1')) == 'BQ'
+
+def castlingPriority(bot):
+    b = Board()
+    b.clear()
+
+    # Set up the board with pieces
+    str = '''[][][][]BK[][]BR
+             [][][][][]BPBPBP
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][][][][][][]
+             [][][]WK[][]WR[]'''.replace(' ','')
+
+    b.setBoardFromString(str)
+    b.gameState.turn = 'B'
+
+    assert b.gameState.getCanCastle('W', 'KQ') == False
+    assert b.gameState.getCastled('W') == False
+    assert b.gameState.getCanCastle('B', 'KQ') == True
+    assert b.gameState.getCastled('B') == False
+
+    bot.makeMove(b) # Expected: 0-0
+
+    assert b.gameState.getCastled('B') == True
+    assert b.getPiece(*toCell('G8')) == 'BK'

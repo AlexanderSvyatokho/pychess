@@ -155,6 +155,8 @@ def testGetMovesForKingAfterMove():
 
 def testGetMovesForKingCastleShort():
     b = Board()
+    assert b.gameState.getCastled('W') == False
+    assert b.gameState.getCastled('B') == False
     assert b.makeMove(toCell('g2'), toCell('g3'))
     assert b.makeMove(toCell('g7'), toCell('g6'))
     assert b.makeMove(toCell('f1'), toCell('g2'))
@@ -168,11 +170,15 @@ def testGetMovesForKingCastleShort():
     b.makeMove(toCell('e1'), toCell('g1'))
     assert b.gameState.getCanCastle('W', 'K') == False
     assert b.gameState.getCanCastle('W', 'Q') == False
+    assert b.gameState.getCastled('W') == True
+    assert b.gameState.getCastled('B') == False
     assert set(b.getMovesForPiece(*toCell('g1'))) == set(toCells(['h1']))
 
     b.makeMove(toCell('e8'), toCell('g8'))
     assert b.gameState.getCanCastle('B', 'K') == False
     assert b.gameState.getCanCastle('B', 'Q') == False
+    assert b.gameState.getCastled('W') == True
+    assert b.gameState.getCastled('B') == True
     assert set(b.getMovesForPiece(*toCell('g8'))) == set(toCells(['h8']))
 
 def testGetMovesForKingCastleLong():
@@ -194,11 +200,15 @@ def testGetMovesForKingCastleLong():
     assert b.makeMove(toCell('e1'), toCell('c1'))
     assert b.gameState.getCanCastle('W', 'K') == False
     assert b.gameState.getCanCastle('W', 'Q') == False
+    assert b.gameState.getCastled('W') == True
+    assert b.gameState.getCastled('B') == False
     assert set(b.getMovesForPiece(*toCell('c1'))) == set(toCells(['b1']))
 
     b.makeMove(toCell('e8'), toCell('c8'))
     assert b.gameState.getCanCastle('B', 'K') == False
     assert b.gameState.getCanCastle('B', 'Q') == False
+    assert b.gameState.getCastled('W') == True
+    assert b.gameState.getCastled('B') == True
     assert set(b.getMovesForPiece(*toCell('c8'))) == set(toCells(['b8']))
 
 def testFoolsMate():

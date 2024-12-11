@@ -39,7 +39,7 @@ class BotDepth1(BotBase):
                     boardCopy2 = boardCopy.copy()
                     boardCopy2.makeMove(opponentMove[0], opponentMove[1], False)
                     movesAnalyzed += 1
-                    score = boardCopy2.gameState.materialScore
+                    score = self.getBoardScore(boardCopy2, myColor)
                     if myColor == 'W':
                         score = -score
                     if score > bestResponseOpponentScore:
@@ -47,7 +47,7 @@ class BotDepth1(BotBase):
                 
                 # If the opponent has no valid moves (checkmate or draw) use the current score
                 if len(opponentMoves) == 0:
-                    score = boardCopy.gameState.materialScore
+                    score = self.getBoardScore(boardCopy, myColor)
                     if myColor == 'W':
                         score = -score
                     if score > bestResponseOpponentScore:

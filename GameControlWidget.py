@@ -23,7 +23,7 @@ class GameControlWidget(QtWidgets.QWidget):
         self.cmbOpponent.addItem(OpponentType.BOT_DEPTH1.value)
         self.cmbOpponent.addItem(OpponentType.BOT_DEPTH2.value)
         self.cmbOpponent.addItem(OpponentType.BOT_DEPTH3.value)
-        self.cmbOpponent.setCurrentIndex(self.cmbOpponent.count() - 1)
+        self.cmbOpponent.setCurrentIndex(self.cmbOpponent.count() - 2)
       
         self.vboxNewGame = QtWidgets.QVBoxLayout()
         self.vboxNewGame.addWidget(self.txtSelectOpponent)

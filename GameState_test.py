@@ -62,16 +62,16 @@ def testSetCannotCastle():
 
 def testSetCastled():
     gs = GameState()
-    assert gs.getCasted('W') == False
-    assert gs.getCasted('B') == False
+    assert gs.getCastled('W') == False
+    assert gs.getCastled('B') == False
 
     gs.setCastled('W')
-    assert gs.getCasted('W') == True
-    assert gs.getCasted('B') == False
+    assert gs.getCastled('W') == True
+    assert gs.getCastled('B') == False
 
     gs.setCastled('B')
-    assert gs.getCasted('W') == True
-    assert gs.getCasted('B') == True
+    assert gs.getCastled('W') == True
+    assert gs.getCastled('B') == True
 
 def testSetCheck():
     gs = GameState()

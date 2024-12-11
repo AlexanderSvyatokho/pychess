@@ -12,7 +12,7 @@ class OpponentType(Enum):
     BOT_GREEDY = 'Bot [2]: Greedy Silly'
     BOT_DEPTH1= 'Bot [3]: Depth 1'
     BOT_DEPTH2= 'Bot [4]: Depth 2'
-    BOT_DEPTH3= 'Bot [5]: Depth 3'
+    BOT_DEPTH3= 'Bot [5]: Depth 3 - Slow!'
 
 PIECE_VALUES = {
     'P': 1,
