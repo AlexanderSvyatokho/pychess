@@ -3,7 +3,7 @@ Simple chess game written in Python not using any engines and without studying a
 
 ![Screenshot](pychess.png)
 
-# Build and run instructions
+# Run instructions
 ```
 pip install pyside6
 python .\pychess.py
@@ -13,6 +13,12 @@ python .\pychess.py
 ```
 pip install pytest
 pytest
+```
+
+# Package build instructions
+```
+pip install pyinstaller
+pyinstaller --onefile --noconsole --add-data "resources;resources" pychess.py
 ```
 
 ## ToDo list
