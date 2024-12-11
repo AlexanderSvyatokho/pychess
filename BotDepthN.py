@@ -1,4 +1,6 @@
-import random, time, logging
+import random
+import time
+import logging
 from Board import Board
 from BotBase import BotBase
 
@@ -23,14 +25,8 @@ class BotDepthN(BotBase):
         logging.info(f'Bot stats:: time taken: {round(timeTaken, 3)}, avg time: {round(avgTime, 3)}')
 
     def maxMovesForDepth(self, depth: int):
-        if depth == 0:
-            return 20
-        elif depth == 1:
-            return 15
-        elif depth == 2:
-            return 10
-        else:
-            return 5
+        depthToMoves = {0: 20, 1: 20, 2: 10}
+        return depthToMoves.get(depth, 5)
         
     def makeMoveRecursive(self, board: Board, depth: int):
         #logging.info(f'makeIteration: depth={depth}')
@@ -42,7 +38,7 @@ class BotDepthN(BotBase):
             return self.getBoardScore(board, myColor)
        
         validMoves = []
-        if (board.gameState.isGameOngoing()):
+        if board.gameState.isGameOngoing():
             validMoves = board.getValidMoves(myColor)
             random.shuffle(validMoves) # Randomize moves to avoid always picking the first one
 
@@ -52,19 +48,19 @@ class BotDepthN(BotBase):
         
         # If we are at the root node and there are few significant moves, consider more moves
         minMovesForDepth0 = 100
-        if (depth == 0 and len(moves) < minMovesForDepth0):
+        if depth == 0 and len(moves) < minMovesForDepth0:
             for vm in validMoves:
                 if vm not in moves:
                     moves.append(vm)
                     if len(moves) >= minMovesForDepth0:
                         break
 
-        if (depth >= 0 and len(moves) > maxMovesForDepth):
+        if depth >= 0 and len(moves) > maxMovesForDepth:
             moves = moves[:maxMovesForDepth]
 
         # logging.info(f'Depth={depth}, selected moves count ={len(moves)}, selected moves ={moves}')
 
-        if(len(moves) > 0):
+        if len(moves) > 0:
             bestMove = moves[0]
             # From all possible moves, pick the one that gives the worst maximum score for the opponent
             # This assumes the opponent always picks the best move in response
@@ -77,7 +73,7 @@ class BotDepthN(BotBase):
 
                 validOpponentMoves = []
 
-                if (boardCopy.gameState.isGameOngoing()):
+                if boardCopy.gameState.isGameOngoing():
                     validOpponentMoves = boardCopy.getValidMoves('W' if myColor == 'B' else 'B')
                     random.shuffle(validOpponentMoves)
 
@@ -86,7 +82,7 @@ class BotDepthN(BotBase):
                 
                 # If there are no significant responses for the opponent, consider some random moves
                 minOpponentsMoves = 5
-                if (len(opponentMoves) < minOpponentsMoves):
+                if len(opponentMoves) < minOpponentsMoves:
                     for vm in validOpponentMoves:
                         if vm not in opponentMoves:
                             opponentMoves.append(vm)
@@ -110,9 +106,6 @@ class BotDepthN(BotBase):
                         if myColor == 'W':
                             score = -score
                         if score > bestResponseOpponentScore:
-                            bestResponseOpponentScore = score
-
-                        if score and score > bestResponseOpponentScore:
                             bestResponseOpponentScore = score
 
                 if worstOpponentScore > bestResponseOpponentScore:

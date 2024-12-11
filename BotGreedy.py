@@ -13,7 +13,7 @@ class BotGreedy(BotBase):
         moves = board.getValidMoves(myColor)
         random.shuffle(moves) # Randomize moves to avoid always picking the first one
 
-        if(len(moves) > 0):
+        if len(moves) > 0:
             bestMove = moves[0]
             bestScore = -1000000
             for move in moves:

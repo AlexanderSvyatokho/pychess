@@ -5,7 +5,6 @@ from GameState import GameState
 from Utils import *
 
 class GameControlWidget(QtWidgets.QWidget):
-    
     newGameStarted = QtCore.Signal(object)
 
     def __init__(self):

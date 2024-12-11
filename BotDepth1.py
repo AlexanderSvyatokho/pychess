@@ -1,4 +1,6 @@
-import random, time, logging
+import random
+import time
+import logging
 from Board import Board
 from BotBase import BotBase
 
@@ -20,8 +22,8 @@ class BotDepth1(BotBase):
         moves = board.getValidMoves(myColor)
         random.shuffle(moves) # Randomize moves to avoid always picking the first one
         moves = self.sortMovesBySignificance(board, moves)
-
-        if(len(moves) > 0):
+        
+        if len(moves) > 0:
             bestMove = moves[0]
             # From all possible moves, pick the one that gives the worst maximum score for the opponent
             worstOpponentScore = 1000000

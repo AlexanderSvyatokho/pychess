@@ -54,13 +54,13 @@ class GameState:
         self.castled[color] = True
 
     def isCurrentPlayerInCheck(self):
-        return self.gameState['check'] == {'check': True, 'who': self.turn}
+        return self.gameState['check']['check'] and self.gameState['check']['who'] == self.turn
     
     def isCurrentPlayerInCheckmate(self):
-        return self.gameState['checkmate'] == {'checkmate': True, 'who': self.turn}
+        return self.gameState['checkmate']['checkmate'] and self.gameState['checkmate']['who'] == self.turn
 
     def isDraw(self):
-        return self.gameState['draw']['draw'] == True
+        return self.gameState['draw']['draw']
 
     def setDraw(self, reason: str):
         self.gameState['draw']['draw'] = True
@@ -75,4 +75,4 @@ class GameState:
         self.gameState['checkmate']['who'] = who        
 
     def isGameOngoing(self):
-        return self.gameState['checkmate']['checkmate'] == False and self.gameState['draw']['draw'] == False
+        return not self.gameState['checkmate']['checkmate'] and not self.gameState['draw']['draw']

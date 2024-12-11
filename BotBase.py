@@ -21,9 +21,9 @@ class BotBase:
 
             # Capture move
             capturedPiece = board.getPiece(*move[1])
-            if capturedPiece != None:
+            if capturedPiece is not None:
                 multiplier = 1
-                if len(board.gameState.halfMoves):
+                if board.gameState.halfMoves:
                     lastMove = board.gameState.halfMoves[-1]
                     # Prioritize recaptures and captures of moved pieces
                     if lastMove[1] == move[1]:
@@ -31,7 +31,7 @@ class BotBase:
                 significantMovesWithScore.append((move, multiplier * PIECE_VALUES.get(capturedPiece)))
 
             # Promotion
-            if board.getPiece(*move[0])[1] == 'P' and move[1][1] == 7:
+            if board.getPiece(*move[0])[1] == 'P' and (move[1][1] == 7 or move[1][1] == 0):
                 significantMovesWithScore.append((move, 8))
 
             boardCopy = board.copy()
@@ -67,7 +67,6 @@ class BotBase:
         # To do: add more factors to the score
 
         additionalScore += castlingScore
-        if color == 'B':
-            additionalScore = -additionalScore
+        additionalScore = -additionalScore if color == 'B' else additionalScore
 
         return score + additionalScore
