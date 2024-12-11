@@ -415,11 +415,13 @@ class Board:
     
     def promotePawns(self):
         # Autopromote pawns on the last rows to queens
-        for i in range(0, 64):
-            piece = self.board[i]
-            pieceY = i // 8
-            if piece and piece[1] == 'P' and (pieceY == 0 or pieceY == 7):
-                self.board[i] = piece[0] + 'Q'
+        for i in range(8):
+            # Check the first row
+            if self.board[i] and self.board[i] == 'BP':
+                self.board[i] = 'BQ'
+            # Check the last row
+            if self.board[56 + i] and self.board[56 + i] == 'WP':
+                self.board[56 + i] = 'WQ'
                 
     # Moves a piece from fromCell to toCell without checking if the move is valid
     # Precondition (not verified): piece at x, y
@@ -576,13 +578,13 @@ class Board:
         print(f'Can Castle: {self.gameState.canCastle}')
 
     def getBoardAsString(self):
-        str = ''
+        boardStr = ''
         for y in range(0, 8):
             for x in range(0, 8):
                 pc = self.board[x + 8 * (7 - y)]
-                str += pc if pc else '[]'
-            str += '\n'
-        return str
+                boardStr += pc if pc else '[]'
+            boardStr += '\n'
+        return boardStr
     
     def setBoardFromString(self, boardStr):
         rows = boardStr.split('\n')

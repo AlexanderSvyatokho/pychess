@@ -4,7 +4,7 @@ Simple chess game written in Python not using any engines and without studying a
 
 ## ToDo List
 Core:
-  - Review and improve the code
+  - Review and improve the code: Continue from BoardImages
 
 Postponed:
   - Ability to play for black
