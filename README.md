@@ -1,10 +1,12 @@
 # PyChess
 Simple chess game written in Python not using any engines and without studying any chess algorithms. Naive implementation for fun.
 
+![Screenshot](pychess.png)
+
 # Build and run instructions
 ```
 pip install pyside6
-python .\main.py
+python .\pychess.py
 ```
 
 # Test instructions
@@ -14,6 +16,7 @@ pytest
 ```
 
 ## ToDo list
+  - Bots logic improvements
   - Ability to play for black
   - Promotion options (currently Queen is the only option)
   - En passant move
